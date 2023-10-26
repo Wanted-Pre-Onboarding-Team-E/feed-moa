@@ -21,14 +21,14 @@ export class Post {
   @Column()
   content!: string;
 
-  @Column({ name: 'view_count' })
-  viewCount!: string;
+  @Column({ name: 'view_count', default:0 })
+  viewCount!: number;
 
-  @Column({ name: 'like_count' })
-  likeCount!: string;
+  @Column({ name: 'like_count', default:0 })
+  likeCount!: number;
 
-  @Column({ name: 'share_count' })
-  shareCount!: string;
+  @Column({ name: 'share_count', default:0 })
+  shareCount!: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

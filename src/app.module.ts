@@ -19,7 +19,7 @@ import { Post } from './entity/post.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [User, Post],
-      synchronize: false, // 개발환경(DB 만들고 false로 변경하기)
+      synchronize: true, // 개발환경(DB 만들고 false로 변경하기)
       logging: true,
       keepConnectionAlive: true,
     }),
