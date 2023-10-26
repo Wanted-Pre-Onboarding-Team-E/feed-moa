@@ -29,7 +29,7 @@ describe('UserRepository', () => {
     expect(userRepository).toBeDefined();
   });
 
-  test('findByUsername() : User 객체를 반환한다.', async () => {
+  test('findByUsername() : username이 일치하는 User 객체를 반환한다.', async () => {
     // given
     const testUsername = 'test';
     const mockUser = {
@@ -50,6 +50,30 @@ describe('UserRepository', () => {
 
     // then
     expect(findOneBySpy).toHaveBeenCalledWith({ username: testUsername });
+    expect(found).toEqual(mockUser);
+  });
+
+  test('findById() : id가 일치하는 User 객체를 반환한다.', async () => {
+    // given
+    const testId = 1;
+    const mockUser = {
+      id: testId,
+      username: 'test',
+      password: '1234',
+      email: 'test@naver.com',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const findOneBySpy = jest
+      .spyOn(mockRepository, 'findOneBy')
+      .mockResolvedValue(mockUser);
+
+    // when
+    const found = await userRepository.findById(testId);
+
+    // then
+    expect(findOneBySpy).toHaveBeenCalledWith({ id: testId });
     expect(found).toEqual(mockUser);
   });
 });
