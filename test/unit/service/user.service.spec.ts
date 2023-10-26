@@ -45,7 +45,7 @@ describe('UserService', () => {
       const mockUser = {
         id: 1,
         username: testUsername,
-        password: testPassword,
+        password: 'encrypted_password',
         email: 'test@naver.com',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -54,6 +54,8 @@ describe('UserService', () => {
       findByUsernameSpy = jest
         .spyOn(mockUserRepository, 'findByUsername')
         .mockResolvedValue(mockUser);
+
+      userService.comparePassword = jest.fn().mockResolvedValue(true);
 
       // when
       const user = await userService.verifyUser(testUsername, testPassword);
@@ -72,7 +74,7 @@ describe('UserService', () => {
       const mockUser = {
         id: 1,
         username: 'test',
-        password: testPassword,
+        password: 'encrypted_password',
         email: 'test@naver.com',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -82,12 +84,15 @@ describe('UserService', () => {
         .spyOn(mockUserRepository, 'findByUsername')
         .mockResolvedValue(mockUser);
 
+      userService.comparePassword = jest.fn().mockResolvedValue(true);
+
       try {
         // when
         await userService.verifyUser(testUsername, testPassword);
       } catch (error) {
         // then
         expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error.message).toEqual('존재하지 않는 아이디입니다.');
         expect(findByUsernameSpy).toHaveBeenCalledWith(testUsername);
         expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
       }
@@ -101,7 +106,7 @@ describe('UserService', () => {
       const mockUser = {
         id: 1,
         username: testUsername,
-        password: '1234',
+        password: 'encrypted_password',
         email: 'test@naver.com',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -111,12 +116,15 @@ describe('UserService', () => {
         .spyOn(mockUserRepository, 'findByUsername')
         .mockResolvedValue(mockUser);
 
+      userService.comparePassword = jest.fn().mockResolvedValue(false);
+
       try {
         // when
         await userService.verifyUser(testUsername, testPassword);
       } catch (error) {
         // then
         expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error.message).toEqual('비밀번호가 일치하지 않습니다.');
         expect(findByUsernameSpy).toHaveBeenCalledWith(testUsername);
         expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
       }

@@ -35,7 +35,7 @@ export class UserService {
    * @return 같으면 true, 다르면 false
    */
   // TODO: 별도 서비스(e.g. UtilService, AuthService...)로 분리
-  private comparePassword(password, hash): Promise<boolean> {
+  comparePassword(password, hash): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }
 }
