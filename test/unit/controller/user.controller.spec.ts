@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../../src/feature/user/user.service';
 import { UserController } from '../../../src/feature/user/user.controller';
 import { LoginRequestDto } from '../../../src/feature/user/dto/loginRequest.dto';
+import { Response } from 'express';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -46,9 +47,9 @@ describe('UserController', () => {
     };
 
     const mockResponse = {
-      cookie: jest.fn(),
-      send: jest.fn(),
-    };
+      cookie: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
+    } as unknown as Response;
 
     const mockUser = {
       id: 1,
@@ -70,10 +71,16 @@ describe('UserController', () => {
       .mockResolvedValue(mockJwtToken);
 
     // when
-    await userController.userLogin(testLoginRequestDto, mockResponse);
+    const response = await userController.userLogin(
+      testLoginRequestDto,
+      mockResponse,
+    );
 
     // then
     expect(verifyUserSpy).toHaveBeenCalledTimes(1);
     expect(signAsyncSpy).toHaveBeenCalledTimes(1);
+
+    expect(response.cookie).toHaveBeenCalled();
+    expect(response.send).toHaveBeenCalled();
   });
 });
