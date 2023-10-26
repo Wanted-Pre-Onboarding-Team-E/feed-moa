@@ -9,6 +9,7 @@ import { User } from './entity/user.entity';
 import { Post } from './entity/post.entity';
 import { Hashtag } from './entity/hashtag.entity';
 import { StatisticsModule } from './feature/statistics/statistics.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { StatisticsModule } from './feature/statistics/statistics.module';
     PostModule,
     UserModule,
     StatisticsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

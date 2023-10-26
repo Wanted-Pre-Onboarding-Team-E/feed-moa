@@ -5,6 +5,7 @@ import { User } from '../../entity/user.entity';
 import { UserRepository } from './repository/user.repository';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { UserLib } from './user.lib';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { UserService } from './user.service';
       signOptions: { expiresIn: '7d' },
     }),
   ],
-  providers: [UserService, UserRepository],
+  providers: [UserService, UserRepository, UserLib],
   controllers: [UserController],
+  exports: [UserLib],
 })
 export class UserModule {}

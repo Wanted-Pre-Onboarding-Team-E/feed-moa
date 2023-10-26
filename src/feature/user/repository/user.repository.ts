@@ -12,4 +12,8 @@ export class UserRepository {
   findByUsername(username: string): Promise<User> {
     return this.repository.findOneBy({ username });
   }
+
+  findById(id: number) {
+    return this.repository.findOneBy({ id });
+  }
 }
