@@ -12,8 +12,8 @@ import { UserLib } from './user.lib';
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       // TODO: 환경변수로 분리
-      secret: 'team_e',
-      signOptions: { expiresIn: '7d' },
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '7d' }, // 7일
     }),
   ],
   providers: [UserService, UserRepository, UserLib],
