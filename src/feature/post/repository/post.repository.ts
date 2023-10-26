@@ -25,8 +25,8 @@ export class PostRepository {
   }
 
   async findPosts(hashtag: string) {
-    return await this.postRepository
-      .createQueryBuilder('post')
-      .leftJoin('post.hashtag');
+    // return await this.postRepository
+    //   .createQueryBuilder('post')
+    //   .leftJoin('post.hashtag');
   }
 }

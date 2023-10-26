@@ -13,13 +13,13 @@ export class Hashtag {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  hashtag!: string;
+  @Column('simple-array')
+  hashtag!: string[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @ManyToOne(() => Post, (post) => post.hashtags)
+  @ManyToOne(() => Post, (post) => post.hashtags, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post: Post;
 }
