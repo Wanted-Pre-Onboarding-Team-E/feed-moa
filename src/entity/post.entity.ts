@@ -1,3 +1,4 @@
+import { PostType } from 'src/enum/postType.enum';
 import {
   Column,
   CreateDateColumn,
@@ -9,11 +10,10 @@ import {
 @Entity('posts')
 export class Post {
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
-  // 추후 enum 생성후 변경할 예정
   @Column()
-  type!: string;
+  type!: PostType;
 
   @Column()
   title!: string;
