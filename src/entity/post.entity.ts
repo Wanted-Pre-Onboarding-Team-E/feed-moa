@@ -5,7 +5,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Hashtag } from './hashtag.entity';
 
 @Entity('posts')
 export class Post {
@@ -35,4 +37,7 @@ export class Post {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
+
+  @OneToMany(() => Hashtag, (hashtag) => hashtag.post)
+  hashtags: Hashtag[];
 }
