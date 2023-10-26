@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Post } from './post.entity';
 
@@ -22,7 +23,7 @@ export class Hashtag {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  @ManyToOne(() => Post, (post) => post.hashtag)
-  @Column()
+  @ManyToOne(() => Post, (post) => post.hashtags)
+  @JoinColumn({ name: 'post_id' })
   post: Post;
 }
