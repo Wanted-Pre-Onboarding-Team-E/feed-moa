@@ -8,6 +8,11 @@ export class StatisticsController {
 
   @Get()
   getStatistics(@Query() query: StatisticsDTO) {
-    return this.statisticsService.getStatistics(query);
+    if (query.type === 'date') {
+      return this.statisticsService.getStatisticsByDate(query);
+    }
+    if (query.type === 'hour') {
+      return this.statisticsService.getStatisticsByHour(query);
+    }
   }
 }
