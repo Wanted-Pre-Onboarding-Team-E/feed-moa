@@ -13,6 +13,9 @@ export class Hashtag {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column({ name: 'post_id' })
+  postId: number;
+
   @Column()
   hashtag!: string;
 
@@ -21,5 +24,5 @@ export class Hashtag {
 
   @ManyToOne(() => Post, (post) => post.hashtags)
   @JoinColumn({ name: 'post_id' })
-  post: Post;
+  post?: Post;
 }
