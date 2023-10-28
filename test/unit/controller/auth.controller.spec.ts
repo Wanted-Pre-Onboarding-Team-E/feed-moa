@@ -48,7 +48,7 @@ describe('AuthController', () => {
 
     const mockResponse = {
       cookie: jest.fn().mockReturnThis(),
-      send: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
     } as unknown as Response;
 
     const mockUser = {
@@ -81,6 +81,6 @@ describe('AuthController', () => {
     expect(signAsyncSpy).toHaveBeenCalledTimes(1);
 
     expect(response.cookie).toHaveBeenCalled();
-    expect(response.send).toHaveBeenCalled();
+    expect(response.json).toHaveBeenCalled();
   });
 });
