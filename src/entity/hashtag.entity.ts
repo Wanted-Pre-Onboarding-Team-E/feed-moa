@@ -13,9 +13,6 @@ export class Hashtag {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ name: 'post_id' })
-  postId: number;
-
   @Column()
   hashtag!: string;
 

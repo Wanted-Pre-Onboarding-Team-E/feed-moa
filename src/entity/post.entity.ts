@@ -39,5 +39,5 @@ export class Post {
   updatedAt!: Date;
 
   @OneToMany(() => Hashtag, (hashtag) => hashtag.post)
-  hashtags?: Hashtag[];
+  hashtags!: Hashtag[];
 }
