@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { UserRepository } from '../../../src/feature/user/repository/user.repository';
-import { UserService } from '../../../src/feature/user/user.service';
 import { UnauthorizedException } from '@nestjs/common';
+import { UserLib } from '../../../src/feature/user/user.lib';
+import { LoginDto } from '../../../src/auth/dto/login.dto';
 
-describe('UserService', () => {
-  let userService: UserService;
+describe('UserLib', () => {
+  let userLib: UserLib;
 
   const mockUserRepository = {
     findByUsername: jest.fn(),
@@ -14,7 +15,7 @@ describe('UserService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UserService,
+        UserLib,
         {
           provide: UserRepository,
           useValue: mockUserRepository, // 모킹된 레파지토리 사용
@@ -22,11 +23,11 @@ describe('UserService', () => {
       ],
     }).compile();
 
-    userService = module.get<UserService>(UserService);
+    userLib = module.get<UserLib>(UserLib);
   });
 
   it('should be defined', () => {
-    expect(userService).toBeDefined();
+    expect(userLib).toBeDefined();
   });
 
   describe('verifyUser()', () => {
@@ -39,12 +40,14 @@ describe('UserService', () => {
 
     test('사용자 정보가 일치하면 User 객체를 반환한다.', async () => {
       // given
-      const testUsername = 'test';
-      const testPassword = '1234';
+      const testLoginDto = {
+        username: 'test',
+        password: '1234',
+      } as LoginDto;
 
       const mockUser = {
         id: 1,
-        username: testUsername,
+        username: testLoginDto.username,
         password: 'encrypted_password',
         email: 'test@naver.com',
         createdAt: new Date(),
@@ -55,21 +58,23 @@ describe('UserService', () => {
         .spyOn(mockUserRepository, 'findByUsername')
         .mockResolvedValue(mockUser);
 
-      userService.comparePassword = jest.fn().mockResolvedValue(true);
+      userLib.comparePassword = jest.fn().mockResolvedValue(true);
 
       // when
-      const user = await userService.verifyUser(testUsername, testPassword);
+      const user = await userLib.verifyUser(testLoginDto);
 
       // then
-      expect(findByUsernameSpy).toHaveBeenCalledWith(testUsername);
+      expect(findByUsernameSpy).toHaveBeenCalledWith(testLoginDto.username);
       expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
       expect(user).toEqual(mockUser);
     });
 
     test('사용자 아이디가 존재하지 않으면 에러가 발생한다.', async () => {
       // given
-      const testUsername = 'id_does_not_exist';
-      const testPassword = '1234';
+      const testLoginDto = {
+        username: 'id_does_not_exist',
+        password: '1234',
+      } as LoginDto;
 
       const mockUser = {
         id: 1,
@@ -84,28 +89,30 @@ describe('UserService', () => {
         .spyOn(mockUserRepository, 'findByUsername')
         .mockResolvedValue(mockUser);
 
-      userService.comparePassword = jest.fn().mockResolvedValue(true);
+      userLib.comparePassword = jest.fn().mockResolvedValue(true);
 
       try {
         // when
-        await userService.verifyUser(testUsername, testPassword);
+        await userLib.verifyUser(testLoginDto);
       } catch (error) {
         // then
         expect(error).toBeInstanceOf(UnauthorizedException);
         expect(error.message).toEqual('존재하지 않는 아이디입니다.');
-        expect(findByUsernameSpy).toHaveBeenCalledWith(testUsername);
+        expect(findByUsernameSpy).toHaveBeenCalledWith(testLoginDto.username);
         expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
       }
     });
 
     test('사용자 비밀번호가 일치하지 않으면 에러가 발생한다.', async () => {
       // given
-      const testUsername = 'test';
-      const testPassword = 'wrong_password';
+      const testLoginDto = {
+        username: 'test',
+        password: 'wrong_password',
+      } as LoginDto;
 
       const mockUser = {
         id: 1,
-        username: testUsername,
+        username: testLoginDto.username,
         password: 'encrypted_password',
         email: 'test@naver.com',
         createdAt: new Date(),
@@ -116,16 +123,16 @@ describe('UserService', () => {
         .spyOn(mockUserRepository, 'findByUsername')
         .mockResolvedValue(mockUser);
 
-      userService.comparePassword = jest.fn().mockResolvedValue(false);
+      userLib.comparePassword = jest.fn().mockResolvedValue(false);
 
       try {
         // when
-        await userService.verifyUser(testUsername, testPassword);
+        await userLib.verifyUser(testLoginDto);
       } catch (error) {
         // then
         expect(error).toBeInstanceOf(UnauthorizedException);
         expect(error.message).toEqual('비밀번호가 일치하지 않습니다.');
-        expect(findByUsernameSpy).toHaveBeenCalledWith(testUsername);
+        expect(findByUsernameSpy).toHaveBeenCalledWith(testLoginDto.username);
         expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
       }
     });
