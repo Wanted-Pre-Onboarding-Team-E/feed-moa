@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { UserRepository } from './repository/user.repository';
 import { User } from '../../entity/user.entity';
 
 @Injectable()
 export class UserLib {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
   /**
    * id로 사용자 조회
@@ -13,6 +17,6 @@ export class UserLib {
    * @return User 객체
    */
   getUserById(id: number): Promise<User> {
-    return this.userRepository.findById(id);
+    return this.userRepository.findOneBy({ id });
   }
 }
