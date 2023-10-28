@@ -1,11 +1,11 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Controller, Param, Patch } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostType } from 'src/enum/postType.enum';
 @Controller('posts')
 export class PostController {
   constructor(private postService: PostService) {}
 
-  @Post(':type/like/:postId')
+  @Patch(':type/like/:postId')
   async incrementPostLikeCount(
     @Param('type') type: PostType,
     @Param('postId') postId: number,
