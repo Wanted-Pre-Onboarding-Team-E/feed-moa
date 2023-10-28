@@ -9,7 +9,7 @@ export class HashtagController {
   create(
     @Param('post_id') post_id: number,
     @Body()
-    hashtag: string[],
+    hashtag: string,
   ) {
     return this.hashService.create(post_id, hashtag);
   }

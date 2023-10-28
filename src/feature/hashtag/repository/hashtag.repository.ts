@@ -1,5 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Hashtag } from 'src/entity/hashtag.entity';
+import { Post } from 'src/entity/post.entity';
 import { Repository } from 'typeorm';
 
 export class HashtagRepository {
@@ -8,11 +9,13 @@ export class HashtagRepository {
     private hashtagRepository: Repository<Hashtag>,
   ) {}
 
-  async create(post_id, hashtag) {
-    const newHashtag = this.hashtagRepository.create({
-      hashtag: [hashtag],
+  async create(post_id: number, hashtags: string) {
+    // const hashtagAsString = hashtags.toString();
+    // console.log(typeof hashtagAsString);
+
+    return this.hashtagRepository.save({
+      hashtag: '톰',
       post: { id: post_id },
     });
-    return this.hashtagRepository.save(newHashtag);
   }
 }

@@ -5,7 +5,7 @@ import { HashtagRepository } from './repository/hashtag.repository';
 export class HashtagService {
   constructor(private hashtagRepository: HashtagRepository) {}
 
-  create(post_id, hashtag) {
-    return this.hashtagRepository.create(post_id, hashtag);
+  async create(post_id: number, hashtag: string) {
+    return await this.hashtagRepository.create(post_id, hashtag);
   }
 }

@@ -8,4 +8,5 @@ export class GetPostsDto {
   search: string;
   page_count: number;
   page: number;
+  order: string;
 }
