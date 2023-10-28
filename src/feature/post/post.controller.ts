@@ -1,4 +1,10 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { Post } from 'src/entity/post.entity';
 import { PostService } from './post.service';
 import { ApiResult } from '../custom/apiResult';
@@ -16,10 +22,7 @@ export class PostController {
   ): Promise<ApiResult<Post>> {
     const post = await this.postService.getPostWithHasgtagById(id);
     if (!post) {
-      return {
-        success: false,
-        message: ErrorMessage.postNotFound,
-      };
+      throw new HttpException(ErrorMessage.postNotFound, 404);
     }
 
     return {
