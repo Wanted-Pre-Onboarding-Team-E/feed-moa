@@ -3,10 +3,9 @@ import { StatisticsService } from './statistics.service';
 import { StatisticsController } from './statistics.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from '../../entity/post.entity';
-import { Hashtag } from '../../entity/hashtag.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post, Hashtag])],
+  imports: [TypeOrmModule.forFeature([Post])],
   controllers: [StatisticsController],
   providers: [StatisticsService],
 })
