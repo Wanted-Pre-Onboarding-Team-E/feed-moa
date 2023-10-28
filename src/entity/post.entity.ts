@@ -24,13 +24,13 @@ export class Post {
   content!: string;
 
   @Column({ name: 'view_count' })
-  viewCount!: string;
+  viewCount!: number;
 
   @Column({ name: 'like_count' })
-  likeCount!: string;
+  likeCount!: number;
 
   @Column({ name: 'share_count' })
-  shareCount!: string;
+  shareCount!: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
