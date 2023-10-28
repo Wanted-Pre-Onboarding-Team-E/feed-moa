@@ -1,24 +1,17 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  HttpException,
-  Injectable,
-  UnprocessableEntityException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Post } from '../../entity/post.entity';
-import { Hashtag } from '../../entity/hashtag.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class StatisticsService {
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
-    @InjectRepository(Hashtag) private hashtagRepository: Repository<Hashtag>,
   ) {}
 
-  async getStatisticsByDate(query) {
-    const startDate = new Date(query.start);
-    const endDate = new Date(query.end);
+  async getStatisticsByDate(statsParams) {
+    const startDate = new Date(statsParams.start);
+    const endDate = new Date(statsParams.end);
     const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
     if (endDate.getTime() - startDate.getTime() > thirtyDaysInMilliseconds) {
       throw new UnprocessableEntityException(
@@ -26,91 +19,34 @@ export class StatisticsService {
       );
     }
 
-    if (query.type === 'hour') {
-      const startHour = new Date(query.start);
-      const endHour = new Date(query.end);
-      const oneWeekInMilliseconds = 168 * 60 * 60 * 1000;
+    let selectValue;
 
-      if (endHour.getTime() - startHour.getTime() > oneWeekInMilliseconds) {
-        throw new UnprocessableEntityException(
-          '최대 조회 가능한 시간은 일주일(168시간)입니다.',
-        );
-      }
+    if (statsParams.value === 'count') {
+      selectValue = 'COUNT(post.id)';
+    } else if (statsParams.value === 'view_count') {
+      selectValue = 'SUM(post.view_count)';
+    } else if (statsParams.value === 'like_count') {
+      selectValue = 'SUM(post.like_count)';
+    } else if (statsParams.value === 'share_count') {
+      selectValue = 'SUM(post.share_count)';
     }
 
-    let result;
+    const result = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.hashtags', 'hashtag')
+      .select('DATE(post.created_at)', 'date')
+      .addSelect(selectValue, 'sum')
+      .where('hashtag.hashtag = :hashtag', { hashtag: statsParams.hashtag })
+      .andWhere(
+        'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 DAY)',
+        {
+          startDate: statsParams.start,
+          endDate: statsParams.end,
+        },
+      )
+      .groupBy('DATE(post.created_at)')
+      .getRawMany();
 
-    if (query.value === 'count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select('DATE(post.created_at)', 'date')
-        .addSelect('COUNT(post.id)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 DAY)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('DATE(post.created_at)')
-        .getRawMany();
-    }
-
-    if (query.value === 'view_count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select('DATE(post.created_at)', 'date')
-        .addSelect('SUM(post.view_count)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 DAY)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('DATE(post.created_at)')
-        .getRawMany();
-    }
-
-    if (query.value === 'like_count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select('DATE(post.created_at)', 'date')
-        .addSelect('SUM(post.like_count)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 DAY)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('DATE(post.created_at)')
-        .getRawMany();
-    }
-
-    if (query.value === 'share_count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select('DATE(post.created_at)', 'date')
-        .addSelect('SUM(post.share_count)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 DAY)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('DATE(post.created_at)')
-        .getRawMany();
-    }
     const dateMap = {};
     const currentDate = new Date(startDate);
 
@@ -130,106 +66,53 @@ export class StatisticsService {
     return dateMap;
   }
 
-  async getStatisticsByHour(query) {
-    const startHour = new Date(query.start);
-    const endHour = new Date(query.end);
-    const oneWeekInMilliseconds = 168 * 60 * 60 * 1000;
+  async getStatisticsByHour(statsParams) {
+    const startDateTime = new Date(statsParams.start);
+    const endDateTime = new Date(statsParams.end);
+    const oneWeekInMilliseconds = statsParams * 60 * 60 * 1000;
 
-    if (endHour.getTime() - startHour.getTime() > oneWeekInMilliseconds) {
+    if (
+      endDateTime.getTime() - startDateTime.getTime() >
+      oneWeekInMilliseconds
+    ) {
       throw new UnprocessableEntityException(
         '최대 조회 가능한 시간은 일주일(168시간)입니다.',
       );
     }
 
-    let result;
+    let selectValue;
 
-    if (query.value === 'count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select(
-          'CONCAT(DATE_FORMAT(post.created_at, "%Y-%m-%d %H"), ":00")',
-          'date',
-        )
-        .addSelect('COUNT(post.id)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 HOUR)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('date')
-        .getRawMany();
+    if (statsParams.value === 'count') {
+      selectValue = 'COUNT(post.id)';
+    } else if (statsParams.value === 'view_count') {
+      selectValue = 'SUM(post.view_count)';
+    } else if (statsParams.value === 'like_count') {
+      selectValue = 'SUM(post.like_count)';
+    } else if (statsParams.value === 'share_count') {
+      selectValue = 'SUM(post.share_count)';
     }
 
-    if (query.value === 'view_count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select(
-          'CONCAT(DATE_FORMAT(post.created_at, "%Y-%m-%d %H"), ":00")',
-          'date',
-        )
-        .addSelect('SUM(post.view_count)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 HOUR)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('date')
-        .getRawMany();
-    }
-
-    if (query.value === 'like_count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select(
-          'CONCAT(DATE_FORMAT(post.created_at, "%Y-%m-%d %H"), ":00")',
-          'date',
-        )
-        .addSelect('SUM(post.like_count)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 HOUR)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('date')
-        .getRawMany();
-    }
-
-    if (query.value === 'share_count') {
-      result = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.hashtags', 'hashtag')
-        .select(
-          'CONCAT(DATE_FORMAT(post.created_at, "%Y-%m-%d %H"), ":00")',
-          'date',
-        )
-        .addSelect('SUM(post.share_count)', 'sum')
-        .where('hashtag.hashtag = :hashtag', { hashtag: query.hashtag })
-        .andWhere(
-          'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 HOUR)',
-          {
-            startDate: query.start,
-            endDate: query.end,
-          },
-        )
-        .groupBy('date')
-        .getRawMany();
-    }
+    const result = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.hashtags', 'hashtag')
+      .select(
+        'CONCAT(DATE_FORMAT(post.created_at, "%Y-%m-%d %H"), ":00")',
+        'date',
+      )
+      .addSelect(selectValue, 'sum')
+      .where('hashtag.hashtag = :hashtag', { hashtag: statsParams.hashtag })
+      .andWhere(
+        'DATE(post.created_at) BETWEEN :startDate AND DATE_ADD(:endDate, INTERVAL 1 HOUR)',
+        {
+          startDate: statsParams.start,
+          endDate: statsParams.end,
+        },
+      )
+      .groupBy('date')
+      .getRawMany();
 
     const dateTimeMap = {};
-    const startDateTime = new Date(query.start);
-    const endDateTime = new Date(query.end);
+
     const currentDateTime = new Date(startDateTime);
 
     while (currentDateTime <= endDateTime) {
