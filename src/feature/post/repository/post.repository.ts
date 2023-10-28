@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { FindOneOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Post } from 'src/entity/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreatePostDto } from '../dto/create.post.dto';
+import { QueryPostsDto } from '../dto/queryPost.dto';
 
 @Injectable()
 export class PostRepository {
@@ -11,22 +11,51 @@ export class PostRepository {
     private postRepository: Repository<Post>,
   ) {}
 
-  async create(createPostDto: CreatePostDto): Promise<void> {
-    const createPost = this.postRepository.create(createPostDto);
-    await this.postRepository.save(createPost);
-  }
+  async getDetailPost(queryPostsDto: QueryPostsDto): Promise<Post[]> {
+    const query = await this.postRepository.createQueryBuilder('post');
+    //TODO: 유저 정보추가 되었을 경우 else 추가하여 미입력 시 디폴트 값 본인계정 조회
+    if (queryPostsDto.hashtag) {
+      query.innerJoin('post.hashtags', 'hashtags');
+      query.where('hashtags.hashtag = :hashtag', {
+        hashtag: queryPostsDto.hashtag,
+      });
+    }
 
-  async find(option: FindOneOptions<Post>) {
-    return await this.postRepository.find(option);
-  }
+    if (queryPostsDto.type) {
+      query.andWhere('post.type = :type', { type: queryPostsDto.type });
+    }
 
-  async findOne(option: FindOneOptions<Post>) {
-    return await this.postRepository.findOne(option);
-  }
+    if (queryPostsDto.searchBy && queryPostsDto.search) {
+      if (queryPostsDto.searchBy === 'title') {
+        query.andWhere('post.title LIKE :search', {
+          search: `%${queryPostsDto.search}%`,
+        });
+      } else if (queryPostsDto.searchBy === 'content') {
+        query.andWhere('post.content LIKE :search', {
+          search: `%${queryPostsDto.search}%`,
+        });
+      } else if (queryPostsDto.searchBy === 'title,content') {
+        query.andWhere(
+          '(post.title LIKE :search OR post.content LIKE :search)',
+          { search: `%${queryPostsDto.search}%` },
+        );
+      }
+    }
 
-  async findPosts(hashtag: string) {
-    // return await this.postRepository
-    //   .createQueryBuilder('post')
-    //   .leftJoin('post.hashtag');
+    if (queryPostsDto.orderBy) {
+      if (queryPostsDto.order === 'ASC') {
+        query.orderBy(`post.${queryPostsDto.orderBy}`, 'ASC');
+      } else if (queryPostsDto.order === 'DESC') {
+        query.orderBy(`post.${queryPostsDto.orderBy}`, 'DESC');
+      }
+    } else {
+      query.orderBy('post.createdAt', 'DESC');
+    }
+
+    const page = queryPostsDto.page || 0;
+    const page_count = queryPostsDto.pageCount || 10;
+    query.skip(page * page_count).take(page_count);
+    const posts = await query.getMany();
+    return posts;
   }
 }
