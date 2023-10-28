@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../../../src/entity/user.entity';
 import { UserLib } from '../../../src/feature/user/user.lib';
 
-describe('UserRepository', () => {
+describe('UserLib', () => {
   let userLib: UserLib;
 
   const mockUserRepository = {
