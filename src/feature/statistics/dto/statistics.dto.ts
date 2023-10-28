@@ -1,14 +1,30 @@
-import { IsNotEmpty } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDateString,
+  IsOptional,
+  IsEnum,
+  ValidateIf,
+} from 'class-validator';
+import { StatisticsValueType } from '../../../enum/statisticsValueType.enum';
 
 export class StatisticsDTO {
-  hashtag: string;
+  @IsOptional()
+  @IsString()
+  hashtag: string = '태그';
 
-  value: 'count' | 'view_count' | 'like_count' | 'share_count';
+  @IsOptional()
+  @IsEnum(StatisticsValueType)
+  value?: StatisticsValueType;
 
   @IsNotEmpty()
-  type: 'date' | 'hour';
+  type!: 'date' | 'hour';
 
-  start: string;
+  @IsOptional()
+  @IsDateString()
+  start?: string;
 
-  end: string;
+  @IsOptional()
+  @IsDateString()
+  end?: string;
 }
