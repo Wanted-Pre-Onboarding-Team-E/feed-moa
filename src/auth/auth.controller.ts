@@ -25,14 +25,16 @@ export class AuthController {
     const verifiedUser = await this.userLib.verifyUser(loginDto);
 
     // JWT 발급
-    const payload = { id: verifiedUser.id, username: verifiedUser.username };
-    const accessToken = await this.jwtService.signAsync(payload);
-
-    // Set-Cookie 헤더로 JWT 반환
-    return res.cookie('accessToken', accessToken, { httpOnly: true }).json({
+    const payload = {
       id: verifiedUser.id,
       username: verifiedUser.username,
       email: verifiedUser.email,
-    });
+    };
+    const accessToken = await this.jwtService.signAsync(payload);
+
+    // Set-Cookie 헤더로 JWT 토큰 & 응답 body로 사용자 정보 반환
+    return res
+      .cookie('accessToken', accessToken, { httpOnly: true })
+      .json(payload);
   }
 }
