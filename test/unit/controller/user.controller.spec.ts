@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-
-import { UserService } from '../../../src/feature/user/user.service';
-import { UserController } from '../../../src/feature/user/user.controller';
-import { LoginRequestDto } from '../../../src/feature/user/dto/loginRequest.dto';
 import { Response } from 'express';
 
-describe('UserController', () => {
-  let userController: UserController;
+import { UserLib } from '../../../src/feature/user/user.lib';
+import { LoginDto } from '../../../src/auth/dto/login.dto';
+import { AuthController } from '../../../src/auth/auth.controller';
+
+describe('AuthController', () => {
+  let authController: AuthController;
 
   const mockUserService = {
     verifyUser: jest.fn(),
@@ -20,9 +20,9 @@ describe('UserController', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UserController,
+        AuthController,
         {
-          provide: UserService,
+          provide: UserLib,
           useValue: mockUserService, // 모킹된 서비스 사용
         },
         {
@@ -32,16 +32,16 @@ describe('UserController', () => {
       ],
     }).compile();
 
-    userController = module.get<UserController>(UserController);
+    authController = module.get<AuthController>(AuthController);
   });
 
   it('should be defined', () => {
-    expect(userController).toBeDefined();
+    expect(authController).toBeDefined();
   });
 
   test('사용자 정보가 일치하면 User 객체를 반환한다.', async () => {
     // given
-    const testLoginRequestDto: LoginRequestDto = {
+    const testLoginRequestDto: LoginDto = {
       username: 'test',
       password: '1234',
     };
@@ -71,7 +71,7 @@ describe('UserController', () => {
       .mockResolvedValue(mockJwtToken);
 
     // when
-    const response = await userController.userLogin(
+    const response = await authController.userLogin(
       testLoginRequestDto,
       mockResponse,
     );
