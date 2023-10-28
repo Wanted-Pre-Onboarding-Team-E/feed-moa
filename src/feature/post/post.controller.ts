@@ -41,7 +41,7 @@ export class PostController {
   @Patch('/share')
   async updatePostShareCountById(
     @Query() postShareDto: PostShareDto,
-  ): Promise<ApiResult<{ status: number; post: Post }>> {
+  ): Promise<ApiResult<void>> {
     const post = await this.postService.getPostWithHasgtagById(postShareDto.id);
     if (!post) {
       throw new HttpException(
@@ -50,9 +50,10 @@ export class PostController {
       );
     }
 
+    await this.postService.updatePostShareCountById(postShareDto, post);
+
     return {
       success: true,
-      data: await this.postService.updatePostShareCountById(postShareDto, post),
     };
   }
 }
