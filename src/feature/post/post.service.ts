@@ -43,7 +43,7 @@ export class PostService {
         case PostType.TWITTER:
           return `https://www.twitter.com/share/${postShareDto.id}`;
         case PostType.THREADS:
-          return `https://www.twitter.com/share/${postShareDto.id}`;
+          return `https://www.threads.net/share/${postShareDto.id}`;
       }
     };
 
