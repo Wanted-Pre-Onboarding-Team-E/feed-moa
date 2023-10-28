@@ -14,9 +14,8 @@ import { UserLib } from './user.lib';
     ConfigModule.forRoot(), // TODO: configuration 파일 형식으로 정리 필요해보임
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      // TODO: 환경변수로 분리
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '7d' }, // 7일
+      signOptions: { expiresIn: '24h' }, // 24시간
     }),
   ],
   providers: [UserService, UserRepository, UserLib],
