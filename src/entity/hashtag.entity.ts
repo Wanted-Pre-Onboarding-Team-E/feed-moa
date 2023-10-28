@@ -13,8 +13,8 @@ export class Hashtag {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column('simple-array')
-  hashtag!: string[];
+  @Column()
+  hashtag!: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
