@@ -9,7 +9,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
-import { LoginRequestDto } from '../feature/user/dto/loginRequest.dto';
+import { LoginDto } from './dto/login.dto';
 import { UserLib } from '../feature/user/user.lib';
 
 @Controller('auth')
@@ -21,12 +21,8 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async userLogin(
-    @Body() loginRequestDto: LoginRequestDto,
-    @Res() res: Response,
-  ) {
-    const { username, password } = loginRequestDto;
-    const verifiedUser = await this.userLib.verifyUser(username, password);
+  async userLogin(@Body() loginDto: LoginDto, @Res() res: Response) {
+    const verifiedUser = await this.userLib.verifyUser(loginDto);
 
     // JWT 발급
     const payload = { id: verifiedUser.id, username: verifiedUser.username };
