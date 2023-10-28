@@ -20,11 +20,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { id: number; username: string }) {
-    const user = this.userLib.getUserById(payload.id);
+    const user = await this.userLib.getUserById(payload.id);
 
     if (!user) {
       throw new UnauthorizedException('사용자가 존재하지 않습니다.');
     }
-    return user; // NOTE: req.user에 User 객체를 붙임
+
+    // NOTE: req.user에 사용자 정보를 담는다.
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
   }
 }
