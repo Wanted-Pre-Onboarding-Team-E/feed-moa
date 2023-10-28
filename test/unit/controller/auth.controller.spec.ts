@@ -2,14 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
-import { UserLib } from '../../../src/feature/user/user.lib';
 import { LoginDto } from '../../../src/auth/dto/login.dto';
 import { AuthController } from '../../../src/auth/auth.controller';
+import { AuthService } from '../../../src/auth/auth.service';
 
 describe('AuthController', () => {
   let authController: AuthController;
 
-  const mockUserService = {
+  const mockAuthService = {
     verifyUser: jest.fn(),
   };
 
@@ -22,8 +22,8 @@ describe('AuthController', () => {
       providers: [
         AuthController,
         {
-          provide: UserLib,
-          useValue: mockUserService, // 모킹된 서비스 사용
+          provide: AuthService,
+          useValue: mockAuthService, // 모킹된 서비스 사용
         },
         {
           provide: JwtService,
@@ -63,7 +63,7 @@ describe('AuthController', () => {
     const mockJwtToken = 'this_is_jwt_token';
 
     const verifyUserSpy = jest
-      .spyOn(mockUserService, 'verifyUser')
+      .spyOn(mockAuthService, 'verifyUser')
       .mockResolvedValue(mockUser);
 
     const signAsyncSpy = jest
