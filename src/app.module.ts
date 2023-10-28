@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './feature/user/user.module';
 import { PostModule } from './feature/post/post.app.module';
-import { AuthModule } from './auth/auth.module';
 import { User } from './entity/user.entity';
 import { Post } from './entity/post.entity';
 import { AuthCode } from './entity/authCode.entity';
@@ -27,7 +26,6 @@ import { AuthCode } from './entity/authCode.entity';
     }),
     PostModule,
     UserModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

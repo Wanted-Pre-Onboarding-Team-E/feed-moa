@@ -7,7 +7,6 @@ export class CreateUserDto {
   @IsString()
   username!: string;
 
-  //@IsStrongPassword()
   @IsString()
   @MinLength(10)
   password!: string;

@@ -14,7 +14,7 @@ export class AuthCode {
     type: 'varchar',
     length: 100,
   })
-  email!: string;
+  username!: string;
 
   @Column({
     type: 'varchar',
