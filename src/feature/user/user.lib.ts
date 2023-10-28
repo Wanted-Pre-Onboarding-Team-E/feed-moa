@@ -9,7 +9,11 @@ import { LoginDto } from '../../auth/dto/login.dto';
 export class UserLib {
   constructor(private readonly userRepository: UserRepository) {}
 
-  getById(id: number): Promise<User> {
+  /**
+   * id로 사용자 조회
+   * @param id 사용자 DB id
+   */
+  getUserById(id: number): Promise<User> {
     return this.userRepository.findById(id);
   }
 
