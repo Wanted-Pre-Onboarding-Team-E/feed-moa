@@ -26,11 +26,18 @@ export class AuthService {
       throw new UnauthorizedException('존재하지 않는 아이디입니다.');
     }
 
-    const isMatch = await bcrypt.compare(loginDto.password, user.password);
+    const isMatch = await this.comparePassword(
+      loginDto.password,
+      user.password,
+    );
     if (!isMatch) {
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
     }
 
     return user;
+  }
+
+  comparePassword(plainPassword, hashedPassword) {
+    return bcrypt.compare(plainPassword, hashedPassword);
   }
 }
