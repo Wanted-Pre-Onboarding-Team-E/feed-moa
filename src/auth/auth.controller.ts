@@ -29,6 +29,10 @@ export class AuthController {
     const accessToken = await this.jwtService.signAsync(payload);
 
     // Set-Cookie 헤더로 JWT 반환
-    return res.cookie('accessToken', accessToken, { httpOnly: true }).send();
+    return res.cookie('accessToken', accessToken, { httpOnly: true }).json({
+      id: verifiedUser.id,
+      username: verifiedUser.username,
+      email: verifiedUser.email,
+    });
   }
 }
