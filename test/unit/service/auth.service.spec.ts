@@ -1,41 +1,42 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { UserRepository } from '../../../src/feature/user/repository/user.repository';
 import { UnauthorizedException } from '@nestjs/common';
-import { UserLib } from '../../../src/feature/user/user.lib';
-import { LoginDto } from '../../../src/auth/dto/login.dto';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
-describe('UserLib', () => {
-  let userLib: UserLib;
+import { LoginDto } from '../../../src/auth/dto/login.dto';
+import { AuthService } from '../../../src/auth/auth.service';
+import { User } from '../../../src/entity/user.entity';
+
+describe('AuthService', () => {
+  let authService: AuthService;
 
   const mockUserRepository = {
-    findByUsername: jest.fn(),
+    findOneBy: jest.fn(),
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UserLib,
+        AuthService,
         {
-          provide: UserRepository,
+          provide: getRepositoryToken(User),
           useValue: mockUserRepository, // 모킹된 레파지토리 사용
         },
       ],
     }).compile();
 
-    userLib = module.get<UserLib>(UserLib);
+    authService = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
-    expect(userLib).toBeDefined();
+    expect(authService).toBeDefined();
   });
 
   describe('verifyUser()', () => {
-    let findByUsernameSpy;
+    let findOneBySpy;
 
     afterEach(() => {
       // 다음 테스트에 영향을 주지 않기 위해 spy 모킹 해제
-      findByUsernameSpy.mockRestore();
+      findOneBySpy.mockRestore();
     });
 
     test('사용자 정보가 일치하면 User 객체를 반환한다.', async () => {
@@ -54,18 +55,20 @@ describe('UserLib', () => {
         updatedAt: new Date(),
       };
 
-      findByUsernameSpy = jest
-        .spyOn(mockUserRepository, 'findByUsername')
+      findOneBySpy = jest
+        .spyOn(mockUserRepository, 'findOneBy')
         .mockResolvedValue(mockUser);
 
-      userLib.comparePassword = jest.fn().mockResolvedValue(true);
+      authService.comparePassword = jest.fn().mockResolvedValue(true);
 
       // when
-      const user = await userLib.verifyUser(testLoginDto);
+      const user = await authService.verifyUser(testLoginDto);
 
       // then
-      expect(findByUsernameSpy).toHaveBeenCalledWith(testLoginDto.username);
-      expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
+      expect(findOneBySpy).toHaveBeenCalledWith({
+        username: testLoginDto.username,
+      });
+      expect(findOneBySpy).toHaveBeenCalledTimes(1);
       expect(user).toEqual(mockUser);
     });
 
@@ -85,21 +88,23 @@ describe('UserLib', () => {
         updatedAt: new Date(),
       };
 
-      findByUsernameSpy = jest
-        .spyOn(mockUserRepository, 'findByUsername')
+      findOneBySpy = jest
+        .spyOn(mockUserRepository, 'findOneBy')
         .mockResolvedValue(mockUser);
 
-      userLib.comparePassword = jest.fn().mockResolvedValue(true);
+      authService.comparePassword = jest.fn().mockResolvedValue(true);
 
       try {
         // when
-        await userLib.verifyUser(testLoginDto);
+        await authService.verifyUser(testLoginDto);
       } catch (error) {
         // then
         expect(error).toBeInstanceOf(UnauthorizedException);
         expect(error.message).toEqual('존재하지 않는 아이디입니다.');
-        expect(findByUsernameSpy).toHaveBeenCalledWith(testLoginDto.username);
-        expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
+        expect(findOneBySpy).toHaveBeenCalledWith({
+          username: testLoginDto.username,
+        });
+        expect(findOneBySpy).toHaveBeenCalledTimes(1);
       }
     });
 
@@ -119,21 +124,23 @@ describe('UserLib', () => {
         updatedAt: new Date(),
       };
 
-      findByUsernameSpy = jest
-        .spyOn(mockUserRepository, 'findByUsername')
+      findOneBySpy = jest
+        .spyOn(mockUserRepository, 'findOneBy')
         .mockResolvedValue(mockUser);
 
-      userLib.comparePassword = jest.fn().mockResolvedValue(false);
+      authService.comparePassword = jest.fn().mockResolvedValue(false);
 
       try {
         // when
-        await userLib.verifyUser(testLoginDto);
+        await authService.verifyUser(testLoginDto);
       } catch (error) {
         // then
         expect(error).toBeInstanceOf(UnauthorizedException);
         expect(error.message).toEqual('비밀번호가 일치하지 않습니다.');
-        expect(findByUsernameSpy).toHaveBeenCalledWith(testLoginDto.username);
-        expect(findByUsernameSpy).toHaveBeenCalledTimes(1);
+        expect(findOneBySpy).toHaveBeenCalledWith({
+          username: testLoginDto.username,
+        });
+        expect(findOneBySpy).toHaveBeenCalledTimes(1);
       }
     });
   });
