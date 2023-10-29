@@ -12,10 +12,10 @@ export class User {
   id!: number;
 
   @Column()
-  email!: string;
+  username!: string;
 
   @Column()
-  username!: string;
+  email!: string;
 
   @Column()
   password!: string;

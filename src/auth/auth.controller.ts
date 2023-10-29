@@ -9,8 +9,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
-import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -36,5 +37,16 @@ export class AuthController {
     return res
       .cookie('accessToken', accessToken, { httpOnly: true })
       .json(payload);
+  }
+
+  @Post('approve')
+  async approveMembership(
+    @Body()
+    approveMembershipRequestDto: ApproveMembershipRequestDto,
+  ) {
+    await this.authService.activateUser(approveMembershipRequestDto);
+    return {
+      message: '가입 승인되었습니다.',
+    };
   }
 }

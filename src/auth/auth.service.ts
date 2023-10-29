@@ -5,13 +5,15 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from '../entity/user.entity';
 import { LoginDto } from './dto/login.dto';
+import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+    private readonly userRepository: Repository<User>, // @InjectRepository(AuthCode)
+  ) // private readonly authCodeRepository: Repository<AuthCode>,
+  {}
 
   /**
    * 사용자 검증
@@ -39,5 +41,19 @@ export class AuthService {
 
   comparePassword(plainPassword, hashedPassword) {
     return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  async activateUser({ username, authCode }: ApproveMembershipRequestDto) {
+    /*
+    const isRegistered = await this.authCodesRepository.findOneBy({
+      username,
+      code: authCode,
+    });
+    if (!isRegistered) {
+      throw new UnauthorizedException('유효하지 않은 인증코드 입니다.');
+    }
+
+    await this.userRepository.update({ username }, { isActive: true });
+    */
   }
 }
