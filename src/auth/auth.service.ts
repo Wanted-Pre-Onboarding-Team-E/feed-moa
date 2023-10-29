@@ -31,6 +31,10 @@ export class AuthService {
       throw new UnauthorizedException('존재하지 않는 아이디입니다.');
     }
 
+    if (!user.isActive) {
+      throw new UnauthorizedException('가입 승인되지 않은 사용자입니다.');
+    }
+
     const isMatch = await this.comparePassword(
       loginDto.password,
       user.password,
