@@ -21,5 +21,5 @@ export class Hashtag {
 
   @ManyToOne(() => Post, (post) => post.hashtags)
   @JoinColumn({ name: 'post_id' })
-  post: Post;
+  post?: Post;
 }
