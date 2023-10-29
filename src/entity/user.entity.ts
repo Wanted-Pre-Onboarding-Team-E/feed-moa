@@ -31,9 +31,9 @@ export class User {
     length: 200,
   })
   password!: string;
-  //
-  // @Column({ name: 'is_active' })
-  // isActive!: boolean;
+
+  @Column({ name: 'is_active' })
+  isActive!: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
