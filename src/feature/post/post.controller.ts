@@ -12,6 +12,7 @@ import { ApiResult } from '../custom/apiResult';
 import { ErrorMessage } from 'src/error/error.enum';
 import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
 import { PostType } from 'src/enum/postType.enum';
+import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
 
 @Controller({
   path: '/posts',
@@ -37,9 +38,9 @@ export class PostController {
   @Patch('/:id/share/:type')
   async updatePostShareCountById(
     @Param('id', ParseIntPipe) id: number,
-    @Param('type') type: PostType,
+    @Param('type', PostTypeValidationPipe) type: PostType,
   ): Promise<ApiResult<void>> {
-    const post = await this.postService.getPostWithHasgtagById(id);
+    const post = await this.postService.getPostWithHasgtagById(id, type);
     if (!post) {
       throw new HttpException(
         ErrorMessage.postNotFound,
