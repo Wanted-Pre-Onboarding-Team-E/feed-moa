@@ -3,15 +3,47 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from '../../entity/post.entity';
 import { StatisticsDTO } from '../statistics/dto/statistics.dto';
+import { StatisticsValueType } from '../../enum/statisticsValueType.enum';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
   ) {}
+  setDefaultValue(statisticsDTO: StatisticsDTO) {
+    if (!statisticsDTO.hashtag) {
+      statisticsDTO.hashtag = '태그';
+    }
+
+    if (!statisticsDTO.value) {
+      statisticsDTO.value = StatisticsValueType.COUNT;
+    }
+
+    if (!statisticsDTO.end) {
+      statisticsDTO.end = new Date().toISOString();
+    }
+
+    if (statisticsDTO.type === 'date' && !statisticsDTO.start) {
+      const thirtyDaysAgo = new Date(statisticsDTO.end);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+      statisticsDTO.start = thirtyDaysAgo.toISOString();
+    }
+
+    if (statisticsDTO.type === 'hour' && !statisticsDTO.start) {
+      const oneWeekAgo = new Date(statisticsDTO.end);
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 5);
+      oneWeekAgo.setHours(oneWeekAgo.getHours() - 23);
+      oneWeekAgo.setMinutes(oneWeekAgo.getMinutes() - 59);
+      statisticsDTO.start = oneWeekAgo.toISOString();
+    }
+  }
+
   async getStatisticsByDate(statisticsDTO: StatisticsDTO) {
+    this.setDefaultValue(statisticsDTO);
+
     const startDate = new Date(statisticsDTO.start);
     const endDate = new Date(statisticsDTO.end);
+
     const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
     if (endDate.getTime() - startDate.getTime() > thirtyDaysInMilliseconds) {
       throw new UnprocessableEntityException(
@@ -67,6 +99,8 @@ export class PostService {
   }
 
   async getStatisticsByHour(statisticsDTO: StatisticsDTO) {
+    this.setDefaultValue(statisticsDTO);
+
     const startDateTime = new Date(statisticsDTO.start);
     const endDateTime = new Date(statisticsDTO.end);
     const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
