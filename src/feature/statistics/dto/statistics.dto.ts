@@ -11,7 +11,7 @@ import { StatisticsValueType } from '../../../enum/statisticsValueType.enum';
 export class StatisticsDTO {
   @IsOptional()
   @IsString()
-  hashtag: string = '태그';
+  hashtag?: string;
 
   @IsOptional()
   @IsEnum(StatisticsValueType)
