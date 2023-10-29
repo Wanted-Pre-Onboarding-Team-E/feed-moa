@@ -5,7 +5,7 @@ import { PostType } from 'src/enum/postType.enum';
 export class PostController {
   constructor(private postService: PostService) {}
 
-  @Patch(':type/like/:postId')
+  @Patch(':postId/like/:type')
   async incrementPostLikeCount(
     @Param('type') type: PostType,
     @Param('postId') postId: number,
