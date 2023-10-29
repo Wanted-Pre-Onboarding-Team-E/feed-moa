@@ -5,8 +5,6 @@ import { User } from '../../entity/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserLib } from './user.lib';
-
-import { User } from '../../entity/user.entity';
 import { AuthCode } from '../../entity/authCode.entity';
 
 @Module({
