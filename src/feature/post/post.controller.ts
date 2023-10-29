@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { Post } from 'src/entity/post.entity';
 import { PostService } from './post.service';
@@ -13,7 +14,9 @@ import { ErrorMessage } from 'src/error/error.enum';
 import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
 import { PostType } from 'src/enum/postType.enum';
 import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
+import { JwtAuthGuard } from '../../auth/guard/jwtAuth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller({
   path: '/posts',
 })

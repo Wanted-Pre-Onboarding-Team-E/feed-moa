@@ -17,14 +17,15 @@ export class User {
   @Column({
     type: 'varchar',
     length: 100,
+    unique: true,
   })
-  email!: string;
+  username!: string;
 
   @Column({
     type: 'varchar',
     length: 100,
   })
-  username!: string;
+  email!: string;
 
   @Column({
     type: 'varchar',
@@ -32,7 +33,7 @@ export class User {
   })
   password!: string;
 
-  @Column({ name: 'is_active' })
+  @Column({ name: 'is_active', default: false })
   isActive!: boolean;
 
   @CreateDateColumn({ name: 'created_at' })

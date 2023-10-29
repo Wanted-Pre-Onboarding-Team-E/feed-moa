@@ -16,11 +16,11 @@ export class UserController {
       createUserDto.password,
       createUserDto.confirmPassword,
     );
-    await this.userService.createUser(createUserDto);
+    const authCode = await this.userService.createUser(createUserDto);
 
     return {
       message: '가입요청이 완료되었습니다.',
-      data: createUserDto,
+      data: { authCode },
     };
   }
 }
