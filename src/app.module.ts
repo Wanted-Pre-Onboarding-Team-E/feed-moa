@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './feature/user/user.module';
+import { UserAppModule } from './feature/user/user.app.module';
 import { PostModule } from './feature/post/post.app.module';
 import { User } from './entity/user.entity';
 import { Post } from './entity/post.entity';
@@ -25,7 +25,7 @@ import { AuthCode } from './entity/authCode.entity';
       keepConnectionAlive: true,
     }),
     PostModule,
-    UserModule,
+    UserAppModule,
   ],
   controllers: [AppController],
   providers: [AppService],

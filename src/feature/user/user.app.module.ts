@@ -11,4 +11,4 @@ import { AuthCode } from '../../entity/authCode.entity';
   providers: [UserService],
   controllers: [UserController],
 })
-export class UserModule {}
+export class UserAppModule {}
