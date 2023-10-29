@@ -26,18 +26,19 @@ export class UserService {
    * @Param password 사용자 비밀번호, 해시 함수를 적용하고 저장 */
   async createUser({ username, email, password }) {
     const code: string = Math.floor(Math.random() * 1000000).toString();
-    await this.authCodeRepository.save({
+    const savedAuthCode = await this.authCodeRepository.save({
       username,
       code,
     });
 
-    return await this.userRepository.save(
+    await this.userRepository.save(
       this.userRepository.create({
         username,
         email,
         password,
       }),
     );
+    return savedAuthCode.code;
   }
 
   /** 비밀번호 유효성 검사
