@@ -24,7 +24,6 @@ export class PostController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ApiResult<Post>> {
     const post = await this.postService.getPostWithHasgtagById(id);
-    console.log('넘어오나?', post);
     if (!post) {
       throw new HttpException(ErrorMessage.postNotFound, 404);
     }
