@@ -10,4 +10,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(10)
   password!: string;
+
+  @IsString()
+  confirmPassword!: string;
 }

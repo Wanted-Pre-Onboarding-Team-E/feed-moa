@@ -10,7 +10,10 @@ export class UserController {
   @Post('/signup')
   async signUpUser(@Body() createUserDto: CreateUserDto) {
     await this.userService.checkUserExists(createUserDto.username);
-    await this.userService.checkPasswordValidate(createUserDto.password);
+    await this.userService.checkPasswordValidate(
+      createUserDto.password,
+      createUserDto.confirmPassword,
+    );
     await this.userService.createUser(createUserDto);
 
     return {
