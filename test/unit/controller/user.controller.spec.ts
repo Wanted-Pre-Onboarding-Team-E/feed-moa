@@ -3,8 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../../../src/feature/user/user.service';
 import { UserController } from '../../../src/feature/user/user.controller';
 import { CreateUserDto } from '../../../src/feature/user/dto/createUser.dto';
-import { AuthCodeRepository } from '../../../src/auth/repository/authCode.repository';
-import { UserRepository } from '../../../src/feature/user/repository/user.repository';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -16,10 +14,6 @@ describe('UserController', () => {
     createUser: jest.fn(),
   };
 
-  const mockUserRepository = {};
-
-  const mockAuthCodeRepository = {};
-
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -27,14 +21,6 @@ describe('UserController', () => {
         {
           provide: UserService,
           useValue: mockUserService,
-        },
-        {
-          provide: UserRepository,
-          useValue: mockUserRepository,
-        },
-        {
-          provide: AuthCodeRepository,
-          useValue: mockAuthCodeRepository,
         },
       ],
     }).compile();
@@ -53,6 +39,7 @@ describe('UserController', () => {
       email: 'creator98@naver.com',
       username: 'test0123',
       password: 'helloWorld123@',
+      confirmPassword: 'helloWorld123@',
     };
 
     const checkUserExistsSpy = jest
