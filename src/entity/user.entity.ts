@@ -32,7 +32,7 @@ export class User {
   })
   password!: string;
 
-  @Column({ name: 'is_active' })
+  @Column({ name: 'is_active', default: false })
   isActive!: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
