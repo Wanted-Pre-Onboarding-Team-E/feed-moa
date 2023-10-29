@@ -1,52 +1,45 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { UserRepository } from '../../../src/feature/user/repository/user.repository';
 import { UserService } from '../../../src/feature/user/user.service';
 import { CreateUserDto } from '../../../src/feature/user/dto/createUser.dto';
-import { AuthCodeRepository } from '../../../src/auth/repository/authCode.repository';
 import { ConflictException } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { AuthCode } from '../../../src/entity/authCode.entity';
+import { User } from '../../../src/entity/user.entity';
 
 describe('UserService', () => {
   let userService: UserService;
-  let userRepository: UserRepository;
-  let authCodeRepository: AuthCodeRepository;
 
   const mockUserRepository = {
-    create: jest.fn(),
+    findOne: jest.fn(),
     save: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-    findOneByUsername: jest.fn(),
+    create: jest.fn(),
   };
 
   const mockAuthCodeRepository = {
-    create: jest.fn(),
     save: jest.fn(),
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
         {
-          provide: UserRepository,
-          useValue: mockUserRepository, // 모킹된 레파지토리 사용
+          provide: getRepositoryToken(User),
+          useValue: mockUserRepository,
         },
         {
-          provide: AuthCodeRepository,
+          provide: getRepositoryToken(AuthCode),
           useValue: mockAuthCodeRepository,
         },
       ],
     }).compile();
 
-    userService = module.get(UserService);
-    userRepository = module.get<UserRepository>(UserRepository);
-    authCodeRepository = module.get<AuthCodeRepository>(AuthCodeRepository);
+    userService = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
     expect(userService).toBeDefined();
-    expect(userRepository).toBeDefined();
   });
 
   test('createUser()', async () => {
@@ -54,6 +47,7 @@ describe('UserService', () => {
       username: 'test01',
       email: 'creator98@naver.com',
       password: 'helloWorld123@',
+      confirmPassword: 'helloWorld123@',
     };
     const mockAuthCode = {
       username: 'creator98',
@@ -67,10 +61,10 @@ describe('UserService', () => {
       .spyOn(mockUserRepository, 'save')
       .mockResolvedValue(createUserDto);
 
-    const authCodeResult = await authCodeRepository.save(mockAuthCode);
+    const authCodeResult = await mockAuthCodeRepository.save(mockAuthCode);
 
-    const userResult = await userRepository.save(
-      userRepository.create(createUserDto),
+    const userResult = await mockUserRepository.save(
+      mockUserRepository.create(createUserDto),
     );
 
     expect(saveAuthCodeSpy).toHaveBeenCalledTimes(1);
@@ -78,6 +72,33 @@ describe('UserService', () => {
 
     expect(saveUserSpy).toHaveBeenCalledTimes(1);
     expect(userResult).toEqual(createUserDto);
+  });
+
+  describe('checkUserExists()', () => {
+    test('가입할 수 있는 계정', async () => {
+      const username = 'existingUser';
+      mockUserRepository.findOne.mockResolvedValue(null);
+
+      expect(await userService.checkUserExists(username));
+    });
+
+    test('이미 존재하는 계정', async () => {
+      const username = 'existingUser';
+      const existingUser = {
+        username,
+        email: 'existing@example.com',
+        password: 'hashedPassword',
+      };
+      mockUserRepository.findOne.mockResolvedValue(existingUser);
+
+      try {
+        await userService.checkUserExists(username);
+        fail('Expected ConflictException but got no exception');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+        expect(error.message).toBe('existingUser은 이미 존재하는 계정입니다.');
+      }
+    });
   });
 
   describe('checkPasswordValidate()', () => {
@@ -124,6 +145,21 @@ describe('UserService', () => {
         expect(error).toBeInstanceOf(ConflictException);
         expect(error.message).toBe(
           '비밀번호는 3회 이상 연속되는 문자 사용은 불가능합니다.',
+        );
+      }
+    });
+
+    test('비밀번호와 비밀번호 확인이 일치하지 않음', async () => {
+      const password = 'myPassword@@';
+      const confirmPassword = 'wrongPassword@@';
+
+      try {
+        await userService.checkPasswordValidate(password, confirmPassword);
+        fail('Expected ConflictException but got no exception');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+        expect(error.message).toBe(
+          '비밀번호와 비밀번호 확인이 일치하지 않습니다.',
         );
       }
     });
