@@ -40,6 +40,7 @@ export class AuthController {
   }
 
   @Post('approve')
+  @HttpCode(HttpStatus.OK)
   async approveMembership(
     @Body()
     approveMembershipRequestDto: ApproveMembershipRequestDto,
