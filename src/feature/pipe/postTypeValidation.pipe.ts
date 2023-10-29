@@ -11,24 +11,20 @@ import { ErrorMessage } from 'src/error/error.enum';
 @Injectable()
 export class PostTypeValidationPipe implements PipeTransform {
   transform(type: PostType, metadata: ArgumentMetadata) {
-    const checkPostType = this.checkForExistenceByPostType(type);
-    if (checkPostType < 0) {
+    const isValidPostType = [
+      PostType.INSTAGRAM,
+      PostType.FACEBOOK,
+      PostType.TWITTER,
+      PostType.THREADS,
+    ].includes(type);
+
+    if (!isValidPostType) {
       throw new HttpException(
         ErrorMessage.typeNotFound,
         HttpStatusCode.notFound,
       );
     }
+
     return type;
-  }
-
-  private checkForExistenceByPostType(type: PostType) {
-    const typeObject = [
-      PostType.INSTAGRAM,
-      PostType.FACEBOOK,
-      PostType.TWITTER,
-      PostType.THREADS,
-    ];
-
-    return typeObject.indexOf(type);
   }
 }
