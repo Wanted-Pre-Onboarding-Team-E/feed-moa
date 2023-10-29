@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 
 import { AuthController } from './auth.controller';
 import { User } from '../entity/user.entity';
+import { AuthCode } from '../entity/authCode.entity';
 import { UserModule } from '../feature/user/user.app.module';
 
 @Module({
@@ -20,7 +21,7 @@ import { UserModule } from '../feature/user/user.app.module';
     }),
     PassportModule,
     UserModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, AuthCode]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

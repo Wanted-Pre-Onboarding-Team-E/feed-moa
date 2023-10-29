@@ -1,8 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
+import { AuthCode } from '../entity/authCode.entity';
 import { User } from '../entity/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
@@ -11,9 +12,11 @@ import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto'
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>, // @InjectRepository(AuthCode)
-  ) // private readonly authCodeRepository: Repository<AuthCode>,
-  {}
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(AuthCode)
+    private readonly authCodeRepository: Repository<AuthCode>,
+    private readonly dataSource: DataSource,
+  ) {}
 
   /**
    * 사용자 검증
@@ -44,16 +47,31 @@ export class AuthService {
   }
 
   async activateUser({ username, authCode }: ApproveMembershipRequestDto) {
-    /*
-    const isRegistered = await this.authCodesRepository.findOneBy({
+    // 발급된 인증코드가 있는지 확인
+    const foundAuthCode = await this.authCodeRepository.findOneBy({
       username,
       code: authCode,
     });
-    if (!isRegistered) {
+    if (!foundAuthCode) {
       throw new UnauthorizedException('유효하지 않은 인증코드 입니다.');
     }
 
-    await this.userRepository.update({ username }, { isActive: true });
-    */
+    const qr = this.dataSource.createQueryRunner();
+    await qr.startTransaction();
+
+    try {
+      // 1. User의 isActive: false -> true로 수정
+      await qr.manager
+        .getRepository(User)
+        .update({ username }, { isActive: true });
+      // 2. 발급된 인증코드 삭제
+      await qr.manager.getRepository(AuthCode).remove(foundAuthCode);
+
+      // COMMIT
+      await qr.commitTransaction();
+    } catch (err) {
+      // ROLLBACK
+      await qr.rollbackTransaction();
+    }
   }
 }
