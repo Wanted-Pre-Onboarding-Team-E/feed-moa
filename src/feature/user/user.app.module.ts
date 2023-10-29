@@ -10,4 +10,4 @@ import { UserLib } from './user.lib';
   providers: [UserLib],
   exports: [UserLib],
 })
-export class UserAppModule {}
+export class UserModule {}
