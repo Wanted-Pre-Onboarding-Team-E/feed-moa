@@ -4,11 +4,15 @@ import {
   HttpException,
   Param,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { Post } from 'src/entity/post.entity';
 import { PostService } from './post.service';
 import { ApiResult } from '../custom/apiResult';
 import { ErrorMessage } from 'src/error/error.enum';
+import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
+import { PostType } from 'src/enum/postType.enum';
+import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
 
 @Controller({
   path: '/posts',
@@ -28,6 +32,26 @@ export class PostController {
     return {
       success: true,
       data: await this.postService.getPostAndAddViewCountById(post),
+    };
+  }
+
+  @Patch('/:id/share/:type')
+  async updatePostShareCountById(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('type', PostTypeValidationPipe) type: PostType,
+  ): Promise<ApiResult<void>> {
+    const post = await this.postService.getPostWithHasgtagById(id, type);
+    if (!post) {
+      throw new HttpException(
+        ErrorMessage.postNotFound,
+        HttpStatusCode.notFound,
+      );
+    }
+
+    await this.postService.updatePostShareCountById(id, type, post);
+
+    return {
+      success: true,
     };
   }
 }
