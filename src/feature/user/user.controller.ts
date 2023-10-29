@@ -7,6 +7,8 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  /** 사용자 회원가입 API
+   * @Param createUserDto 회원가입 입력 정보 */
   @Post('/signup')
   async signUpUser(@Body() createUserDto: CreateUserDto) {
     await this.userService.checkUserExists(createUserDto.username);
