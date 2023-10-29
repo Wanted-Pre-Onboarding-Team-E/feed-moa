@@ -7,6 +7,7 @@ import { UserModule } from './feature/user/user.app.module';
 import { PostModule } from './feature/post/post.app.module';
 import { User } from './entity/user.entity';
 import { Post } from './entity/post.entity';
+import { AuthCode } from './entity/authCode.entity';
 import { Hashtag } from './entity/hashtag.entity';
 import { StatisticsModule } from './feature/statistics/statistics.module';
 import { AuthModule } from './auth/auth.module';
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
+      entities: [User, Post, AuthCode],
       entities: [User, Post, Hashtag],
       synchronize: false, // 개발환경(DB 만들고 false로 변경하기)
       logging: true,
