@@ -1,13 +1,18 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+
 import { User } from '../../entity/user.entity';
 import { AuthCode } from '../../entity/authCode.entity';
 
 @Injectable()
 export class UserService {
   constructor(
+    @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(AuthCode)
     private readonly authCodeRepository: Repository<AuthCode>,
   ) {}
 
