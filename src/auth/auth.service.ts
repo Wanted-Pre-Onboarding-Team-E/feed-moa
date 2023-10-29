@@ -60,22 +60,22 @@ export class AuthService {
       throw new UnauthorizedException('유효하지 않은 인증코드 입니다.');
     }
 
-    const qr = this.dataSource.createQueryRunner();
-    await qr.startTransaction();
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.startTransaction();
 
     try {
-      // 1. User의 isActive: false -> true로 수정
-      await qr.manager
+      // 1. User의 isActive: false -> true로 변경
+      await queryRunner.manager
         .getRepository(User)
         .update({ username }, { isActive: true });
       // 2. 발급된 인증코드 삭제
-      await qr.manager.getRepository(AuthCode).remove(foundAuthCode);
+      await queryRunner.manager.getRepository(AuthCode).remove(foundAuthCode);
 
       // COMMIT
-      await qr.commitTransaction();
+      await queryRunner.commitTransaction();
     } catch (err) {
       // ROLLBACK
-      await qr.rollbackTransaction();
+      await queryRunner.rollbackTransaction();
     }
   }
 }
