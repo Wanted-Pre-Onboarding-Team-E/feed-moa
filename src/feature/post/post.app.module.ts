@@ -3,6 +3,7 @@ import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from 'src/entity/post.entity';
+import { PostLib } from './post.lib';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
@@ -13,7 +14,8 @@ import { HttpModule } from '@nestjs/axios';
       maxRedirects: 5,
     }),
   ],
-  providers: [PostService],
+  providers: [PostService, PostLib],
   controllers: [PostController],
+  exports: [PostLib],
 })
 export class PostModule {}
