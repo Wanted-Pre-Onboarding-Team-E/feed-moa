@@ -36,5 +36,7 @@ lerna-debug.log*
 
 #env 파일
 .env
+.local.env
+.dev.env
 
 test.http
