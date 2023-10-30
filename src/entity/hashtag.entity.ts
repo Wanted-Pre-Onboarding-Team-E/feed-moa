@@ -19,7 +19,7 @@ export class Hashtag {
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @ManyToOne(() => Post, (post) => post.hashtags)
+  @ManyToOne(() => Post, (post) => post.hashtags, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
-  post: Post;
+  post?: Post;
 }
