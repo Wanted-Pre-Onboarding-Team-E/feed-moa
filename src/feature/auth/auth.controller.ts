@@ -10,8 +10,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
 import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
+import { CreateUserDto } from './dto/createUser.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,6 +20,23 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
   ) {}
+
+  /** 사용자 회원가입 API
+   * @Param createUserDto 회원가입 입력 정보 */
+  @Post('/signup')
+  async signUpUser(@Body() createUserDto: CreateUserDto) {
+    await this.authService.checkUserExists(createUserDto.username);
+    await this.authService.checkPasswordValidate(
+      createUserDto.password,
+      createUserDto.confirmPassword,
+    );
+    const authCode = await this.authService.createUser(createUserDto);
+
+    return {
+      message: '가입요청이 완료되었습니다.',
+      data: { authCode },
+    };
+  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)

@@ -1,7 +1,7 @@
-import { Controller, Get, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { StatisticsService } from './statistics.service';
 import { StatisticsDTO } from './dto/statistics.dto';
-import { JwtAuthGuard } from '../../auth/guard/jwtAuth.guard';
+import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('statistics')

@@ -1,12 +1,12 @@
 import {
-  PipeTransform,
-  Injectable,
   ArgumentMetadata,
   HttpException,
+  Injectable,
+  PipeTransform,
 } from '@nestjs/common';
-import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
-import { PostType } from 'src/enum/postType.enum';
-import { ErrorMessage } from 'src/error/error.enum';
+import { HttpStatusCode } from '../../enum/httpStatusCode.enum';
+import { PostType } from '../../enum/postType.enum';
+import { ErrorMessage } from '../../error/error.enum';
 
 @Injectable()
 export class PostTypeValidationPipe implements PipeTransform {

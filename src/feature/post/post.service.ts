@@ -1,13 +1,15 @@
-import { QueryPostsDto } from './dto/queryPost.dto';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { Post } from 'src/entity/post.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PostType } from 'src/enum/postType.enum';
-import { StatisticsDTO } from '../statistics/dto/statistics.dto';
 import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom } from 'rxjs';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { AxiosError } from 'axios';
+import { Repository } from 'typeorm';
+import { catchError, firstValueFrom } from 'rxjs';
+
+import { QueryPostsDto } from './dto/queryPost.dto';
+import { Post } from '../../entity/post.entity';
+import { PostType } from '../../enum/postType.enum';
+import { StatisticsDTO } from '../statistics/dto/statistics.dto';
 
 @Injectable()
 export class PostService {
@@ -20,7 +22,8 @@ export class PostService {
   async incrementPostLikeCount(type: PostType, postId: number) {
     const snsEndpoint = this.getSNSEndpoints(type, postId);
 
-    const response = await firstValueFrom(this.httpService.get(snsEndpoint));
+    // const response =
+    await firstValueFrom(this.httpService.get(snsEndpoint));
     try {
       //NOTE: 현재 EndPoint 값은 확정적으로 실패이므로, 차후에 성공이 가능할 시 if문을 살려서 카운트 증가
       // if (response.status === 200) {
@@ -29,30 +32,6 @@ export class PostService {
       // }
     } catch (err) {
       //NOTE: 추가적으로 팀원들간 에러핸들링 방식 종합될 시 추가
-    }
-  }
-
-  private async updateLikeCount(type: PostType, postId: number) {
-    await this.postRepository
-      .createQueryBuilder()
-      .update(Post)
-      .where({ id: postId, type })
-      .set({ likeCount: () => 'likeCount + 1' })
-      .execute();
-  }
-
-  private getSNSEndpoints(type: PostType, postId: number) {
-    switch (type) {
-      case PostType.FACEBOOK:
-        return `https://www.facebook.com/likes/${postId}`;
-      case PostType.TWITTER:
-        return `https://www.twitter.com/likes/${postId}`;
-      case PostType.INSTAGRAM:
-        return `https://www.instagram.com/likes/${postId}`;
-      case PostType.THREADS:
-        return `https://www.threads.net/likes/${postId}`;
-      default:
-        throw new Error('타입이 존재하지 않습니다.');
     }
   }
 
@@ -285,7 +264,7 @@ export class PostService {
 
     for (const [key, value] of Object.entries(dateTimeMap)) {
       const [date, time] = key.split('T');
-      const [hour, _] = time.split(':');
+      const hour = time.split(':')[0];
       if (!formattedResults[date]) {
         formattedResults[date] = {};
       }
@@ -301,5 +280,29 @@ export class PostService {
       });
 
     return formattedResults;
+  }
+
+  private async updateLikeCount(type: PostType, postId: number) {
+    await this.postRepository
+      .createQueryBuilder()
+      .update(Post)
+      .where({ id: postId, type })
+      .set({ likeCount: () => 'likeCount + 1' })
+      .execute();
+  }
+
+  private getSNSEndpoints(type: PostType, postId: number) {
+    switch (type) {
+      case PostType.FACEBOOK:
+        return `https://www.facebook.com/likes/${postId}`;
+      case PostType.TWITTER:
+        return `https://www.twitter.com/likes/${postId}`;
+      case PostType.INSTAGRAM:
+        return `https://www.instagram.com/likes/${postId}`;
+      case PostType.THREADS:
+        return `https://www.threads.net/likes/${postId}`;
+      default:
+        throw new Error('타입이 존재하지 않습니다.');
+    }
   }
 }

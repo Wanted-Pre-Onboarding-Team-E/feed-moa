@@ -4,10 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './feature/user/user.app.module';
-import { PostModule } from './feature/post/post.app.module';
+import { UserModule } from './feature/user/user.module';
+import { PostModule } from './feature/post/post.module';
 import { StatisticsModule } from './feature/statistics/statistics.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './feature/auth/auth.module';
 
 import { User } from './entity/user.entity';
 import { Post } from './entity/post.entity';

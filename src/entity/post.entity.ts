@@ -1,13 +1,13 @@
-import { PostType } from 'src/enum/postType.enum';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
 import { Hashtag } from './hashtag.entity';
+import { PostType } from '../enum/postType.enum';
 
 @Entity('posts')
 export class Post {
@@ -30,7 +30,6 @@ export class Post {
   likeCount!: number;
 
   @Column({ name: 'share_count', default: 0 })
-
   shareCount!: number;
 
   @CreateDateColumn({ name: 'created_at' })
