@@ -60,7 +60,7 @@ export class AuthService {
       );
     }
 
-    if (/(\w)\1\1/.test(password)) {
+    if (/([!@#$%^&*()+\-=\[\]{}|;:'",.<>/?\w])\1\1/.test(password)) {
       throw new BadRequestException(
         `비밀번호는 3회 이상 연속되는 문자 사용은 불가능합니다.`,
       );
