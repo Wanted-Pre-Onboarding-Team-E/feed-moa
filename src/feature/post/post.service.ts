@@ -53,8 +53,8 @@ export class PostService {
     }
 
     const page = queryPostsDto.page || 0;
-    const page_count = queryPostsDto.pageCount || 10;
-    query.skip(page * page_count).take(page_count);
+    const pageCount = queryPostsDto.pageCount || 10;
+    query.skip(page * pageCount).take(pageCount);
     const posts = await query.getMany();
     return posts;
   }
