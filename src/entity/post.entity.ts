@@ -23,13 +23,13 @@ export class Post {
   @Column()
   content!: string;
 
-  @Column({ name: 'view_count' })
+  @Column({ name: 'view_count', default: 0 })
   viewCount!: number;
 
-  @Column({ name: 'like_count' })
+  @Column({ name: 'like_count', default: 0 })
   likeCount!: number;
 
-  @Column({ name: 'share_count' })
+  @Column({ name: 'share_count', default: 0 })
   shareCount!: number;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -38,6 +38,6 @@ export class Post {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  @OneToMany(() => Hashtag, (hashtag) => hashtag.post)
-  hashtags!: Hashtag[];
+  @OneToMany(() => Hashtag, (hashtag) => hashtag.post, { cascade: true })
+  hashtags: Hashtag[];
 }
