@@ -13,17 +13,17 @@ export class StatisticsDTO {
   hashtag?: string;
 
   @IsOptional()
-  @IsEnum
+  @IsEnum(StatisticsValueType)
   value?: StatisticsValueType;
 
   @IsNotEmpty()
   type!: 'date' | 'hour';
 
   @IsOptional()
-  @IsDateString
+  @IsDateString()
   start?: string;
 
   @IsOptional()
-  @IsDateString
+  @IsDateString()
   end?: string;
 }
