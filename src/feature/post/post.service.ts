@@ -1,15 +1,21 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { AxiosError } from 'axios';
 import { Repository } from 'typeorm';
-import { catchError, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { QueryPostsDto } from './dto/queryPost.dto';
 import { Post } from '../../entity/post.entity';
 import { PostType } from '../../enum/postType.enum';
 import { StatisticsDTO } from '../statistics/dto/statistics.dto';
+import { ConfigService } from '@nestjs/config';
+import { ErrorMessage } from 'src/error/error.enum';
+import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
 
 @Injectable()
 export class PostService {
@@ -17,6 +23,7 @@ export class PostService {
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
 
   async incrementPostLikeCount(type: PostType, postId: number) {
@@ -122,22 +129,25 @@ export class PostService {
       }
     };
 
-    await firstValueFrom(
-      this.httpService.get<Post[]>(getSnsUrl(type)).pipe(
-        catchError(async (error: AxiosError) => {
-          /*
-          NOTE: 가상의 URL이기 때문에 반드시 에러가 발생합니다.
-                따라서 이 요청이 status 200 성공 응답을 받았다고
-                가정하고 catchError 내부에 작성합니다.
-          */
-          await this.postRepository.save({
-            ...post,
-            shareCount: post.shareCount + 1,
-          });
-          console.log('error : ', error);
-        }),
-      ),
-    );
+    /*
+    NOTE: 가상의 URL이기 때문에 반드시 에러가 발생합니다.
+          따라서 이 요청이 status 200 성공 응답을 받았다고
+          가정하고 if문의 조건에 생략하고 로컬일 경우 성공하는
+          로직으로 작성했습니다.
+    */
+    const gatewayDomain = this.configService.get<string>('GATEWAY_DOMAIN');
+    await this.httpService.get(getSnsUrl(type));
+    if (gatewayDomain === 'local') {
+      await this.postRepository.save({
+        ...post,
+        shareCount: post.shareCount + 1,
+      });
+    } else {
+      throw new HttpException(
+        ErrorMessage.externalSnsFailResponse,
+        HttpStatusCode.internalServerError,
+      );
+    }
   }
 
   async getStatisticsByDate(statisticsDTO: StatisticsDTO) {
