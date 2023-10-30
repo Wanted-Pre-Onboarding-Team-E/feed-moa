@@ -1,3 +1,23 @@
+
+import { Controller, Get, Query, ValidationPipe, Param, Patch } from '@nestjs/common';
+import { PostService } from './post.service';
+import { QueryPostsDto } from './dto/queryPost.dto';
+import { PostType } from 'src/enum/postType.enum';
+
+@Controller('posts')
+export class PostController {
+  constructor(private postService: PostService) {}
+
+
+  @Patch(':postId/like/:type')
+  async incrementPostLikeCount(
+    @Param('type') type: PostType,
+    @Param('postId') postId: number,
+  ) {
+    return await this.postService.incrementPostLikeCount(type, postId);
+  @Get()
+  async getPosts(@Query(ValidationPipe) queryPostsDto: QueryPostsDto) {
+    return await this.postService.getPosts(queryPostsDto);
 import {
   Controller,
   Get,
@@ -6,9 +26,6 @@ import {
   ParseIntPipe,
   Patch,
   UseGuards,
-  Query,
-  ValidationPipe,
-  Req,
 } from '@nestjs/common';
 import { Post } from 'src/entity/post.entity';
 import { PostService } from './post.service';
@@ -18,7 +35,6 @@ import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
 import { PostType } from 'src/enum/postType.enum';
 import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
 import { JwtAuthGuard } from '../../auth/guard/jwtAuth.guard';
-import { QueryPostsDto } from './dto/queryPost.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller({
@@ -31,7 +47,7 @@ export class PostController {
   async getPostAndAddViewCountById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ApiResult<Post>> {
-    const post = await this.postService.getPostWithHashtagById(id);
+    const post = await this.postService.getPostWithHasgtagById(id);
     if (!post) {
       throw new HttpException(ErrorMessage.postNotFound, 404);
     }
@@ -47,7 +63,7 @@ export class PostController {
     @Param('id', ParseIntPipe) id: number,
     @Param('type', PostTypeValidationPipe) type: PostType,
   ): Promise<ApiResult<void>> {
-    const post = await this.postService.getPostWithHashtagById(id, type);
+    const post = await this.postService.getPostWithHasgtagById(id, type);
     if (!post) {
       throw new HttpException(
         ErrorMessage.postNotFound,
@@ -60,23 +76,5 @@ export class PostController {
     return {
       success: true,
     };
-  }
-
-  @Patch(':postId/like/:type')
-  async incrementPostLikeCount(
-    @Param('type') type: PostType,
-    @Param('postId') postId: number,
-  ) {
-    return await this.postService.incrementPostLikeCount(type, postId);
-  }
-  @Get()
-  async getPosts(
-    @Query(ValidationPipe) queryPostsDto: QueryPostsDto,
-    @Req() req,
-  ) {
-    if (!queryPostsDto.hashtag) {
-      queryPostsDto.hashtag = req.user.username;
-    }
-    return await this.postService.getPosts(queryPostsDto);
   }
 }

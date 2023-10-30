@@ -1,18 +1,13 @@
-import { Controller, Get, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { StatisticsService } from './statistics.service';
 import { StatisticsDTO } from './dto/statistics.dto';
-import { JwtAuthGuard } from '../../auth/guard/jwtAuth.guard';
 
-@UseGuards(JwtAuthGuard)
 @Controller('statistics')
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
 
   @Get()
-  getStatistics(@Query() statisticsDTO: StatisticsDTO, @Req() req) {
-    if (!statisticsDTO.hashtag) {
-      statisticsDTO.hashtag = req.user.username;
-    }
+  getStatistics(@Query() statisticsDTO: StatisticsDTO) {
     if (statisticsDTO.type === 'date') {
       return this.statisticsService.getStatisticsByDate(statisticsDTO);
     }
