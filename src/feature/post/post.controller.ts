@@ -7,7 +7,7 @@ export class PostController {
   constructor(private postService: PostService) {}
 
   @Get()
-  async getDetailPost(@Query(ValidationPipe) queryPostsDto: QueryPostsDto) {
-    return await this.postService.getDetailPost(queryPostsDto);
+  async getPosts(@Query(ValidationPipe) queryPostsDto: QueryPostsDto) {
+    return await this.postService.getPosts(queryPostsDto);
   }
 }

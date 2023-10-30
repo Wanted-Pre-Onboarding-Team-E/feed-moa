@@ -10,7 +10,7 @@ export class PostService {
     @InjectRepository(Post) private postRepository: Repository<Post>,
   ) {}
 
-  async getDetailPost(queryPostsDto: QueryPostsDto): Promise<Post[]> {
+  async getPosts(queryPostsDto: QueryPostsDto): Promise<Post[]> {
     const query = this.postRepository.createQueryBuilder('post');
 
     //TODO: 유저 정보추가 되었을 경우 else 추가하여 미입력 시 디폴트 값 본인계정 조회
