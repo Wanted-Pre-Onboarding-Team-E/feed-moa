@@ -30,6 +30,7 @@ export class Post {
   likeCount!: number;
 
   @Column({ name: 'share_count', default: 0 })
+
   shareCount!: number;
 
   @CreateDateColumn({ name: 'created_at' })
