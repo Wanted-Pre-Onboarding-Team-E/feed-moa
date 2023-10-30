@@ -2,15 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
-import { LoginDto } from '../../../src/auth/dto/login.dto';
-import { AuthController } from '../../../src/auth/auth.controller';
-import { AuthService } from '../../../src/auth/auth.service';
+import { AuthController } from '../../../src/feature/auth/auth.controller';
+import { AuthService } from '../../../src/feature/auth/auth.service';
+import { CreateUserDto } from '../../../src/feature/auth/dto/createUser.dto';
+import { LoginDto } from '../../../src/feature/auth/dto/login.dto';
 
 describe('AuthController', () => {
   let authController: AuthController;
 
   const mockAuthService = {
     verifyUser: jest.fn(),
+    checkUserExists: jest.fn(),
+    checkPasswordValidate: jest.fn(),
+    createUser: jest.fn(),
   };
 
   const mockJwtService = {
@@ -37,6 +41,33 @@ describe('AuthController', () => {
 
   it('should be defined', () => {
     expect(authController).toBeDefined();
+  });
+
+  test('signUser()', async () => {
+    const testSignUpRequestDto: CreateUserDto = {
+      email: 'creator98@naver.com',
+      username: 'test0123',
+      password: 'helloWorld123@',
+      confirmPassword: 'helloWorld123@',
+    };
+
+    const checkUserExistsSpy = jest
+      .spyOn(mockAuthService, 'checkUserExists')
+      .mockResolvedValue(null);
+
+    const checkPasswordValidateSpy = jest
+      .spyOn(mockAuthService, 'checkPasswordValidate')
+      .mockResolvedValue(testSignUpRequestDto.password);
+
+    const createUserSpy = jest
+      .spyOn(mockAuthService, 'createUser')
+      .mockResolvedValue(testSignUpRequestDto);
+
+    await authController.signUpUser(testSignUpRequestDto);
+
+    expect(checkUserExistsSpy).toHaveBeenCalledTimes(1);
+    expect(checkPasswordValidateSpy).toHaveBeenCalledTimes(1);
+    expect(createUserSpy).toHaveBeenCalledWith(testSignUpRequestDto);
   });
 
   test('사용자 정보가 일치하면 User 객체를 반환한다.', async () => {

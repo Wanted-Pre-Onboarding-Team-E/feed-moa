@@ -5,20 +5,22 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  UseGuards,
   Query,
-  ValidationPipe,
   Req,
+  UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
-import { Post } from 'src/entity/post.entity';
+
 import { PostService } from './post.service';
-import { ApiResult } from '../custom/apiResult';
-import { ErrorMessage } from 'src/error/error.enum';
-import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
-import { PostType } from 'src/enum/postType.enum';
-import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
-import { JwtAuthGuard } from '../../auth/guard/jwtAuth.guard';
+import { Post } from '../../entity/post.entity';
 import { QueryPostsDto } from './dto/queryPost.dto';
+
+import { ApiResult } from '../custom/apiResult';
+import { PostType } from '../../enum/postType.enum';
+import { ErrorMessage } from '../../error/error.enum';
+import { HttpStatusCode } from '../../enum/httpStatusCode.enum';
+import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
+import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller({
@@ -69,6 +71,7 @@ export class PostController {
   ) {
     return await this.postService.incrementPostLikeCount(type, postId);
   }
+
   @Get()
   async getPosts(
     @Query(ValidationPipe) queryPostsDto: QueryPostsDto,

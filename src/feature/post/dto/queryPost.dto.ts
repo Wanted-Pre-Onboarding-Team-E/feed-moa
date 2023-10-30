@@ -1,5 +1,5 @@
-import { IsNumber, IsString, IsOptional } from 'class-validator';
-import { PostType } from 'src/enum/postType.enum';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { PostType } from '../../../enum/postType.enum';
 
 export class QueryPostsDto {
   @IsString()

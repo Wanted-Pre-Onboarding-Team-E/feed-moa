@@ -1,4 +1,4 @@
-import { ErrorMessage } from 'src/error/error.enum';
+import { ErrorMessage } from '../../error/error.enum';
 
 type SuccessResult<T> = T extends void
   ? {
