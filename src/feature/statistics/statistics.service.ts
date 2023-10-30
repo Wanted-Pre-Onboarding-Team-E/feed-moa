@@ -8,10 +8,6 @@ export class StatisticsService {
   constructor(private readonly postLib: PostLib) {}
 
   setDefaultValue(statisticsDTO: StatisticsDTO) {
-    if (!statisticsDTO.hashtag) {
-      statisticsDTO.hashtag = '태그';
-    }
-
     if (!statisticsDTO.value) {
       statisticsDTO.value = StatisticsValueType.COUNT;
     }

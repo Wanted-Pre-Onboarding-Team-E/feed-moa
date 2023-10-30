@@ -1,5 +1,3 @@
-
-import { firstValueFrom } from 'rxjs';
 import { QueryPostsDto } from './dto/queryPost.dto';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Post } from 'src/entity/post.entity';
@@ -7,18 +5,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PostType } from 'src/enum/postType.enum';
 import { StatisticsDTO } from '../statistics/dto/statistics.dto';
-import { StatisticsValueType } from '../../enum/statisticsValueType.enum';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
-    private httpService: HttpService,
+    private readonly httpService: HttpService,
   ) {}
 
   async incrementPostLikeCount(type: PostType, postId: number) {
@@ -58,6 +54,7 @@ export class PostService {
       default:
         throw new Error('타입이 존재하지 않습니다.');
     }
+  }
 
   async getPosts(queryPostsDto: QueryPostsDto): Promise<Post[]> {
     const query = this.postRepository.createQueryBuilder('post');
@@ -106,12 +103,9 @@ export class PostService {
     query.skip(page * pageCount).take(pageCount);
     const posts = await query.getMany();
     return posts;
+  }
 
-    private readonly httpService: HttpService,
-    @InjectRepository(Post) private readonly postRepository: Repository<Post>,
-  ) {}
-
-  getPostWithHasgtagById(id: number, type?: PostType): Promise<Post> {
+  getPostWithHashtagById(id: number, type?: PostType): Promise<Post> {
     const query = this.postRepository
       .createQueryBuilder('posts')
       .leftJoinAndSelect('posts.hashtags', 'hashtags')
@@ -153,8 +147,8 @@ export class PostService {
       this.httpService.get<Post[]>(getSnsUrl(type)).pipe(
         catchError(async (error: AxiosError) => {
           /*
-          NOTE: 가상의 URL이기 때문에 반드시 에러가 발생합니다. 
-                따라서 이 요청이 status 200 성공 응답을 받았다고 
+          NOTE: 가상의 URL이기 때문에 반드시 에러가 발생합니다.
+                따라서 이 요청이 status 200 성공 응답을 받았다고
                 가정하고 catchError 내부에 작성합니다.
           */
           await this.postRepository.save({
@@ -307,6 +301,5 @@ export class PostService {
       });
 
     return formattedResults;
-
   }
 }
