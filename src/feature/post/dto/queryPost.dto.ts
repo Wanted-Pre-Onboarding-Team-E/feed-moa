@@ -1,28 +1,36 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString, IsOptional } from 'class-validator';
 import { PostType } from 'src/enum/postType.enum';
 
 export class QueryPostsDto {
   @IsString()
-  hashtag: string;
+  @IsOptional()
+  hashtag?: string;
 
   @IsString()
-  type: PostType;
+  @IsOptional()
+  type?: PostType;
 
   @IsString()
-  orderBy: string;
+  @IsOptional()
+  orderBy?: string;
 
   @IsString()
-  order: string;
+  @IsOptional()
+  order?: string;
 
   @IsString()
-  searchBy: string;
+  @IsOptional()
+  searchBy?: string;
 
   @IsString()
-  search: string;
+  @IsOptional()
+  search?: string;
 
   @IsNumber()
-  pageCount: number;
+  @IsOptional()
+  pageCount?: number;
 
   @IsNumber()
-  page: number;
+  @IsOptional()
+  page?: number;
 }
