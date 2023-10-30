@@ -1,9 +1,9 @@
 import { QueryPostsDto } from './dto/queryPost.dto';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { Post } from 'src/entity/post.entity';
+import { Post } from '../../entity/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PostType } from 'src/enum/postType.enum';
+import { PostType } from '../../enum/postType.enum';
 import { StatisticsDTO } from '../statistics/dto/statistics.dto';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -285,7 +285,7 @@ export class PostService {
 
     for (const [key, value] of Object.entries(dateTimeMap)) {
       const [date, time] = key.split('T');
-      const [hour, _] = time.split(':');
+      const hour = time.split(':')[0];
       if (!formattedResults[date]) {
         formattedResults[date] = {};
       }

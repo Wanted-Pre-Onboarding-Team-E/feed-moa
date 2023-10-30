@@ -1,4 +1,4 @@
-import { PostType } from 'src/enum/postType.enum';
+import { PostType } from '../enum/postType.enum';
 import {
   Column,
   CreateDateColumn,
@@ -30,7 +30,6 @@ export class Post {
   likeCount!: number;
 
   @Column({ name: 'share_count', default: 0 })
-
   shareCount!: number;
 
   @CreateDateColumn({ name: 'created_at' })
