@@ -2,7 +2,7 @@
 # 👋 팀원 소개
 |강희수|박동훈|신은수|이드보라|이승원|
 |:--:|:--:|:--:|:--:|:--:|
-|<img src="https://hackmd.io/_uploads/BJGQG6nG6.png" width="100"/>|<img src="https://hackmd.io/_uploads/B12ir7pGp.png" width="100"/>|<img src="https://hackmd.io/_uploads/HyZ86pjzp.png" width="100"/>|<img src="https://hackmd.io/_uploads/ByC5xOhz6.jpg" width="100"/>|<img src="https://hackmd.io/_uploads/B19HTJ6zp.jpg" width="100"/>|!
+|<img src="https://hackmd.io/_uploads/H1Honf0fp.jpg" width="100"/>|<img src="https://hackmd.io/_uploads/B12ir7pGp.png" width="100"/>|<img src="https://hackmd.io/_uploads/HyZ86pjzp.png" width="100"/>|<img src="https://hackmd.io/_uploads/ByC5xOhz6.jpg" width="100"/>|<img src="https://hackmd.io/_uploads/B19HTJ6zp.jpg" width="100"/>|!
 |[@kangssu](https://github.com/kangssu)|[@laetipark](https://github.com/laetipark)|[@dawwson](https://github.com/dawwson)|[@sayapin1](https://github.com/sayapin1)|[@tomeee11](https://github.com/tomeee11)|
 
 </br>
@@ -14,7 +14,10 @@
     - **게시글 상세 조회**
         - 하나의 게시글에 대한 상세 정보 및 관련 해시태그 조회
     - **게시글 공유하기**
-        - NestJS에서 제공하는 HttpModule, CustomPipe 적용
+        - NestJS에서 제공하는 HttpModule, ConfigModule, CustomPipe 사용
+          - HttpModule로 외부 호출 사용
+          - CustomPipe로 Enum Type의 특정 값에 대한 유효성 검증
+          - 로컬에서는 외부 호출을 통과시키기 위해 ConfigModule로 로컬/데브 환경변수 구분
 - **박동훈**
     - **사용자 회원가입 API 개발**
         - 사용자 정보(아이디, 이메일, 비밀번호)에 대한 유효성 검사
@@ -54,6 +57,11 @@
 
 ## 2. 실행 방법
 ### 개발 버전 실행
+- local 실행
+```
+npm run start:local
+```
+- dev 실행
 ```
 npm run start:dev
 ```
