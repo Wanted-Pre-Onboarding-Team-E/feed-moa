@@ -504,11 +504,12 @@ Content-Type: application/json
 <br>
 
 ## 6. 게시물 좋아요
-- 외부 SNS 좋아요 API를 호출하고, `좋아요`수를 증가시킨다.
+- 게시물 목록을 조회한다.
+- 쿼리 파라미터 값에 따라 특정 값을 조회한다.
 
 ### URL
 ```
-PATCH posts/{id}/like/{type}
+GET posts/?hashtag&type&order_by&orde&search_by&search&page_count&page
 Cookie: accessToken={JWT_TOKEN}
 ```
 
