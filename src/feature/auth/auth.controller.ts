@@ -67,9 +67,6 @@ export class AuthController {
     await this.authService.activateUser(approveUserRequestDto);
     return {
       message: '가입 승인되었습니다.',
-      data: {
-        username: approveUserRequestDto.username,
-      },
     };
   }
 }
