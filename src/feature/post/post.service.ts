@@ -46,8 +46,8 @@ export class PostService {
     //TODO: 유저 정보추가 되었을 경우 else 추가하여 미입력 시 디폴트 값 본인계정 조회
     if (queryPostsDto.hashtag) {
       query.innerJoin('post.hashtags', 'hashtags');
-      query.where('hashtags.hashtag LIKE :hashtag', {
-        hashtag: `%${queryPostsDto.hashtag}%`,
+      query.where('hashtags.hashtag = :hashtag', {
+        hashtag: queryPostsDto.hashtag,
       });
     }
 
