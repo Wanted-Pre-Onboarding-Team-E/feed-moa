@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
-import { ApproveUserRequestDto } from './dto/approveUserRequestDto';
+import { ApproveMembershipRequestDto } from './dto/approveMembershipRequestDto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { LoginDto } from './dto/login.dto';
 
@@ -62,9 +62,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async approveMembership(
     @Body()
-    approveUserRequestDto: ApproveUserRequestDto,
+    approveMembershipRequestDto: ApproveMembershipRequestDto,
   ) {
-    await this.authService.activateUser(approveUserRequestDto);
+    await this.authService.activateUser(approveMembershipRequestDto);
     return {
       message: '가입 승인되었습니다.',
     };

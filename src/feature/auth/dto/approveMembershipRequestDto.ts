@@ -1,6 +1,6 @@
 import { IsNumberString, IsString, Length } from 'class-validator';
 
-export class ApproveUserRequestDto {
+export class ApproveMembershipRequestDto {
   @IsString()
   username!: string;
 

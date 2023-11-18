@@ -12,7 +12,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AuthCode } from '../../entity/authCode.entity';
 import { User } from '../../entity/user.entity';
 import { LoginDto } from './dto/login.dto';
-import { ApproveUserRequestDto } from './dto/approveUserRequestDto';
+import { ApproveMembershipRequestDto } from './dto/approveMembershipRequestDto';
 
 @Injectable()
 export class AuthService {
@@ -124,7 +124,7 @@ export class AuthService {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  async activateUser({ username, authCode }: ApproveUserRequestDto) {
+  async activateUser({ username, authCode }: ApproveMembershipRequestDto) {
     // 발급된 인증코드가 있는지 확인
     const foundAuthCode = await this.authCodeRepository.findOneBy({
       username,
