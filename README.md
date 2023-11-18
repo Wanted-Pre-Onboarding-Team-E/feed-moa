@@ -17,10 +17,12 @@
 
 # 🏷️ 목차
 
-1. [:arrow_forward: 스크립트 실행](#arrow_forward-스크립트-실행)
+1. [:gear: 환경 설정 및 실행](#gear-환경-설정-및-실행)
 2. [:cd: 데이터베이스 모델링](#cd-데이터베이스-모델링)
 3. [:earth_asia: API 명세](#earth_asia-API-명세)
 4. [:bookmark_tabs: 구현 내용](#bookmark_tabs-구현-내용)
+
+<br>
 
 # :gear: 환경 설정 및 실행
 
@@ -66,7 +68,7 @@ GATEWAY_DOMAIN=
 
 <br>
 
-# :bookmark_tabs: 요구 사항 구현 내용
+# :bookmark_tabs: 구현 내용
 
 ## 사용자
 
@@ -91,8 +93,6 @@ GATEWAY_DOMAIN=
 - `가입 승인된 사용자`만 `로그인` 할 수 있다.
 - `계정명`과 `비밀번호`로 로그인한다.
 - 로그인 후 `모든 API 요청`에 대해 `JWT 유효성`을 검증한다.
-
-<br>
 
 ## 게시물
 
