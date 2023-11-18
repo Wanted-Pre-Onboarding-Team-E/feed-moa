@@ -12,7 +12,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AuthCode } from '../../entity/authCode.entity';
 import { User } from '../../entity/user.entity';
 import { LoginDto } from './dto/login.dto';
-import { ApproveMembershipRequestDto } from './dto/approveMembershipRequestDto';
+import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
 
 @Injectable()
 export class AuthService {

@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
-import { ApproveMembershipRequestDto } from './dto/approveMembershipRequestDto';
+import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { LoginDto } from './dto/login.dto';
 
