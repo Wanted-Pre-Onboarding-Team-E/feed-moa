@@ -12,7 +12,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AuthCode } from '../../entity/authCode.entity';
 import { User } from '../../entity/user.entity';
 import { LoginDto } from './dto/login.dto';
-import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
+import { ApproveUserRequestDto } from './dto/approveUserRequestDto';
 
 @Injectable()
 export class AuthService {
@@ -67,10 +67,11 @@ export class AuthService {
     }
 
     const hashedConfirmPassword = await bcrypt.hash(confirmPassword, 10);
-    const comparePasswords = await bcrypt.compare(
+    const comparePasswords = await this.comparePassword(
       password,
       hashedConfirmPassword,
     );
+
     if (!comparePasswords) {
       throw new ConflictException(
         `비밀번호와 비밀번호 확인이 일치하지 않습니다.`,
@@ -86,7 +87,6 @@ export class AuthService {
         username: username,
       },
     });
-
     if (user) {
       throw new ConflictException(`${username}은 이미 존재하는 계정입니다.`);
     }
@@ -120,11 +120,11 @@ export class AuthService {
     return user;
   }
 
-  comparePassword(plainPassword, hashedPassword) {
+  comparePassword(plainPassword: string, hashedPassword: string) {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  async activateUser({ username, authCode }: ApproveMembershipRequestDto) {
+  async activateUser({ username, authCode }: ApproveUserRequestDto) {
     // 발급된 인증코드가 있는지 확인
     const foundAuthCode = await this.authCodeRepository.findOneBy({
       username,

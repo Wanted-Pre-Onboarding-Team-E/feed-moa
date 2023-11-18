@@ -8,16 +8,22 @@ import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
 
-  @Get()
+  @Get('/')
   getStatistics(@Query() statisticsDTO: StatisticsDTO, @Req() req) {
     if (!statisticsDTO.hashtag) {
       statisticsDTO.hashtag = req.user.username;
     }
     if (statisticsDTO.type === 'date') {
-      return this.statisticsService.getStatisticsByDate(statisticsDTO);
+      return {
+        message: '일자별 통계 조회에 성공하였습니다.',
+        data: this.statisticsService.getStatisticsByDate(statisticsDTO),
+      };
     }
     if (statisticsDTO.type === 'hour') {
-      return this.statisticsService.getStatisticsByHour(statisticsDTO);
+      return {
+        message: '시간별 통계 조회에 성공하였습니다.',
+        data: this.statisticsService.getStatisticsByHour(statisticsDTO),
+      };
     }
   }
 }

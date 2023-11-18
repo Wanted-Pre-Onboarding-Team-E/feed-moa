@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
-import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
+import { ApproveUserRequestDto } from './dto/approveUserRequestDto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { LoginDto } from './dto/login.dto';
 
@@ -23,7 +23,7 @@ export class AuthController {
 
   /** 사용자 회원가입 API
    * @Param createUserDto 회원가입 입력 정보 */
-  @Post('/signup')
+  @Post('/register')
   async signUpUser(@Body() createUserDto: CreateUserDto) {
     await this.authService.checkUserExists(createUserDto.username);
     await this.authService.checkPasswordValidate(
@@ -52,20 +52,24 @@ export class AuthController {
     const accessToken = await this.jwtService.signAsync(payload);
 
     // Set-Cookie 헤더로 JWT 토큰 & 응답 body로 사용자 정보 반환
-    return res
-      .cookie('accessToken', accessToken, { httpOnly: true })
-      .json(payload);
+    return res.cookie('accessToken', accessToken, { httpOnly: true }).json({
+      message: '로그인 성공',
+      data: payload,
+    });
   }
 
   @Post('approve')
   @HttpCode(HttpStatus.OK)
   async approveMembership(
     @Body()
-    approveMembershipRequestDto: ApproveMembershipRequestDto,
+    approveUserRequestDto: ApproveUserRequestDto,
   ) {
-    await this.authService.activateUser(approveMembershipRequestDto);
+    await this.authService.activateUser(approveUserRequestDto);
     return {
       message: '가입 승인되었습니다.',
+      data: {
+        username: approveUserRequestDto.username,
+      },
     };
   }
 }

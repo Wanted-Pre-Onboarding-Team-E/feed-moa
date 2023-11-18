@@ -12,10 +12,7 @@ import {
 } from '@nestjs/common';
 
 import { PostService } from './post.service';
-import { Post } from '../../entity/post.entity';
 import { QueryPostsDto } from './dto/queryPost.dto';
-
-import { ApiResult } from '../custom/apiResult';
 import { PostType } from '../../enum/postType.enum';
 import { ErrorMessage } from '../../error/error.enum';
 import { HttpStatusCode } from '../../enum/httpStatusCode.enum';
@@ -30,9 +27,7 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get('/:id')
-  async getPostAndAddViewCountById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ApiResult<Post>> {
+  async getPostAndAddViewCountById(@Param('id', ParseIntPipe) id: number) {
     const post = await this.postService.getPostWithHashtagById(id);
     if (!post) {
       throw new HttpException(ErrorMessage.postNotFound, 404);
@@ -48,7 +43,7 @@ export class PostController {
   async updatePostShareCountById(
     @Param('id', ParseIntPipe) id: number,
     @Param('type', PostTypeValidationPipe) type: PostType,
-  ): Promise<ApiResult<void>> {
+  ) {
     const post = await this.postService.getPostWithHashtagById(id, type);
     if (!post) {
       throw new HttpException(
@@ -60,19 +55,30 @@ export class PostController {
     await this.postService.updatePostShareCountById(id, type, post);
 
     return {
-      success: true,
+      message: '게시물 공유에 성공하였습니다.',
+      data: {
+        id: id,
+        type: type,
+      },
     };
   }
 
-  @Patch(':postId/like/:type')
+  @Patch('/:id/like/:type')
   async incrementPostLikeCount(
+    @Param('id') id: number,
     @Param('type') type: PostType,
-    @Param('postId') postId: number,
   ) {
-    return await this.postService.incrementPostLikeCount(type, postId);
+    await this.postService.incrementPostLikeCount(type, id);
+    return {
+      message: '게시물 좋아요에 성공하였습니다.',
+      data: {
+        id: id,
+        type: type,
+      },
+    };
   }
 
-  @Get()
+  @Get('/')
   async getPosts(
     @Query(ValidationPipe) queryPostsDto: QueryPostsDto,
     @Req() req,
@@ -80,6 +86,9 @@ export class PostController {
     if (!queryPostsDto.hashtag) {
       queryPostsDto.hashtag = req.user.username;
     }
-    return await this.postService.getPosts(queryPostsDto);
+    return {
+      message: '게시물 목록 조회에 성공하였습니다.',
+      data: await this.postService.getPosts(queryPostsDto),
+    };
   }
 }

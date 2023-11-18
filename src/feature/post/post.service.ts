@@ -7,7 +7,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
-import { firstValueFrom } from 'rxjs';
 
 import { QueryPostsDto } from './dto/queryPost.dto';
 import { Post } from '../../entity/post.entity';
@@ -29,8 +28,7 @@ export class PostService {
   async incrementPostLikeCount(type: PostType, postId: number) {
     const snsEndpoint = this.getSNSEndpoints(type, postId);
 
-    // const response =
-    await firstValueFrom(this.httpService.get(snsEndpoint));
+    // const response = await firstValueFrom(this.httpService.get(snsEndpoint));
     try {
       //NOTE: 현재 EndPoint 값은 확정적으로 실패이므로, 차후에 성공이 가능할 시 if문을 살려서 카운트 증가
       // if (response.status === 200) {
@@ -48,8 +46,8 @@ export class PostService {
     //TODO: 유저 정보추가 되었을 경우 else 추가하여 미입력 시 디폴트 값 본인계정 조회
     if (queryPostsDto.hashtag) {
       query.innerJoin('post.hashtags', 'hashtags');
-      query.where('hashtags.hashtag = :hashtag', {
-        hashtag: queryPostsDto.hashtag,
+      query.where('hashtags.hashtag LIKE :hashtag', {
+        hashtag: `%${queryPostsDto.hashtag}%`,
       });
     }
 
