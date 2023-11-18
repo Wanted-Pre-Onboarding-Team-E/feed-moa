@@ -1,11 +1,15 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './feature/user/user.module';
 import { PostModule } from './feature/post/post.module';
 import { StatisticsModule } from './feature/statistics/statistics.module';
 import { AuthModule } from './feature/auth/auth.module';
-import { ConfigService } from '@nestjs/config/dist/config.service';
+
+import { User } from './entity/user.entity';
+import { Post } from './entity/post.entity';
+import { Hashtag } from './entity/hashtag.entity';
+import { AuthCode } from './entity/authCode.entity';
 
 @Module({
   imports: [
@@ -23,7 +27,7 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_DATABASE'),
-          entities: ['dist/**/**/*.entity.{ts,js}'],
+          entities: [User, Post, Hashtag, AuthCode],
           synchronize: false,
           logging: configService.get<string>('NODE_ENV') === 'local',
         };
