@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   HttpException,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
@@ -14,9 +15,9 @@ import {
 import { PostService } from './post.service';
 import { QueryPostsDto } from './dto/queryPost.dto';
 import { PostType } from '../../enum/postType.enum';
-import { ErrorMessage } from '../../error/error.enum';
-import { HttpStatusCode } from '../../enum/httpStatusCode.enum';
+import { ErrorType } from '../../enum/errorType.enum';
 import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
+import { SuccessType } from '../../enum/successType.enum';
 import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -26,15 +27,29 @@ import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @Get('/')
+  async getPosts(
+    @Query(ValidationPipe) queryPostsDto: QueryPostsDto,
+    @Req() req,
+  ) {
+    if (!queryPostsDto.hashtag) {
+      queryPostsDto.hashtag = req.user.username;
+    }
+    return {
+      message: SuccessType.POSTS_GET,
+      data: await this.postService.getPosts(queryPostsDto),
+    };
+  }
+
   @Get('/:id')
   async getPostAndAddViewCountById(@Param('id', ParseIntPipe) id: number) {
     const post = await this.postService.getPostWithHashtagById(id);
     if (!post) {
-      throw new HttpException(ErrorMessage.postNotFound, 404);
+      throw new HttpException(ErrorType.POST_NOT_FOUND, 404);
     }
 
     return {
-      success: true,
+      message: SuccessType.POST_GET,
       data: await this.postService.getPostAndAddViewCountById(post),
     };
   }
@@ -46,16 +61,13 @@ export class PostController {
   ) {
     const post = await this.postService.getPostWithHashtagById(id, type);
     if (!post) {
-      throw new HttpException(
-        ErrorMessage.postNotFound,
-        HttpStatusCode.notFound,
-      );
+      throw new NotFoundException(ErrorType.POST_NOT_FOUND);
     }
 
     await this.postService.updatePostShareCountById(id, type, post);
 
     return {
-      message: '게시물 공유에 성공하였습니다.',
+      message: SuccessType.POST_SHARE_PATCH,
       data: {
         id: id,
         type: type,
@@ -68,27 +80,13 @@ export class PostController {
     @Param('id') id: number,
     @Param('type') type: PostType,
   ) {
-    await this.postService.incrementPostLikeCount(type, id);
+    await this.postService.incrementPostLikeCount(id, type);
     return {
-      message: '게시물 좋아요에 성공하였습니다.',
+      message: SuccessType.POST_LIKE_PATCH,
       data: {
         id: id,
         type: type,
       },
-    };
-  }
-
-  @Get('/')
-  async getPosts(
-    @Query(ValidationPipe) queryPostsDto: QueryPostsDto,
-    @Req() req,
-  ) {
-    if (!queryPostsDto.hashtag) {
-      queryPostsDto.hashtag = req.user.username;
-    }
-    return {
-      message: '게시물 목록 조회에 성공하였습니다.',
-      data: await this.postService.getPosts(queryPostsDto),
     };
   }
 }

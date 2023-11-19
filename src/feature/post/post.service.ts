@@ -1,7 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import {
-  HttpException,
   Injectable,
+  InternalServerErrorException,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,8 +14,7 @@ import { Post } from '../../entity/post.entity';
 import { PostType } from '../../enum/postType.enum';
 import { StatisticsDTO } from '../statistics/dto/statistics.dto';
 import { ConfigService } from '@nestjs/config';
-import { ErrorMessage } from 'src/error/error.enum';
-import { HttpStatusCode } from 'src/enum/httpStatusCode.enum';
+import { ErrorType } from '../../enum/errorType.enum';
 
 @Injectable()
 export class PostService {
@@ -25,15 +25,13 @@ export class PostService {
     private readonly configService: ConfigService,
   ) {}
 
-  async incrementPostLikeCount(type: PostType, postId: number) {
-    const snsEndpoint = this.getSNSEndpoints(type, postId);
-
-    // const response = await firstValueFrom(this.httpService.get(snsEndpoint));
+  async incrementPostLikeCount(id: number, type: PostType) {
+    this.httpService.get(this.getSNSEndpoints(id, type, 'like'));
     try {
       //NOTE: 현재 EndPoint 값은 확정적으로 실패이므로, 차후에 성공이 가능할 시 if문을 살려서 카운트 증가
       // if (response.status === 200) {
 
-      await this.updateLikeCount(type, postId);
+      await this.updateLikeCount(type, id);
       // }
     } catch (err) {
       //NOTE: 추가적으로 팀원들간 에러핸들링 방식 종합될 시 추가
@@ -114,19 +112,6 @@ export class PostService {
     type: PostType,
     post: Post,
   ): Promise<void> {
-    const getSnsUrl = (type: PostType) => {
-      switch (type) {
-        case PostType.INSTAGRAM:
-          return `https://www.instagram.com/share/${id}`;
-        case PostType.FACEBOOK:
-          return `https://www.facebook.com/share/${id}`;
-        case PostType.TWITTER:
-          return `https://www.twitter.com/share/${id}`;
-        case PostType.THREADS:
-          return `https://www.threads.net/share/${id}`;
-      }
-    };
-
     /*
     NOTE: 가상의 URL이기 때문에 반드시 에러가 발생합니다.
           따라서 이 요청이 status 200 성공 응답을 받았다고
@@ -134,16 +119,15 @@ export class PostService {
           로직으로 작성했습니다.
     */
     const gatewayDomain = this.configService.get<string>('GATEWAY_DOMAIN');
-    await this.httpService.get(getSnsUrl(type));
+    this.httpService.get(this.getSNSEndpoints(id, type, 'share'));
     if (gatewayDomain === 'local') {
       await this.postRepository.save({
         ...post,
         shareCount: post.shareCount + 1,
       });
     } else {
-      throw new HttpException(
-        ErrorMessage.externalSnsFailResponse,
-        HttpStatusCode.internalServerError,
+      throw new InternalServerErrorException(
+        ErrorType.EXTERNAL_SNS_RESPONSE_FAILED,
       );
     }
   }
@@ -155,7 +139,7 @@ export class PostService {
     const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
     if (endDate.getTime() - startDate.getTime() > thirtyDaysInMilliseconds) {
       throw new UnprocessableEntityException(
-        '최대 조회 가능한 날짜는 30일입니다.',
+        ErrorType.MAXIMUM_ALLOWED_DAYS_EXCEEDED,
       );
     }
 
@@ -216,7 +200,7 @@ export class PostService {
       oneWeekInMilliseconds
     ) {
       throw new UnprocessableEntityException(
-        '최대 조회 가능한 시간은 일주일(168시간)입니다.',
+        ErrorType.MAXIMUM_ALLOWED_TIME_EXCEEDED,
       );
     }
 
@@ -299,18 +283,18 @@ export class PostService {
       .execute();
   }
 
-  private getSNSEndpoints(type: PostType, postId: number) {
+  private getSNSEndpoints(id: number, type: PostType, route: string) {
     switch (type) {
       case PostType.FACEBOOK:
-        return `https://www.facebook.com/likes/${postId}`;
+        return `https://www.facebook.com/${route}/${id}`;
       case PostType.TWITTER:
-        return `https://www.twitter.com/likes/${postId}`;
+        return `https://www.twitter.com/${route}/${id}`;
       case PostType.INSTAGRAM:
-        return `https://www.instagram.com/likes/${postId}`;
+        return `https://www.instagram.com/${route}/${id}`;
       case PostType.THREADS:
-        return `https://www.threads.net/likes/${postId}`;
+        return `https://www.threads.net/${route}/${id}`;
       default:
-        throw new Error('타입이 존재하지 않습니다.');
+        throw new NotFoundException(ErrorType.SNS_TYPE_NOT_FOUND);
     }
   }
 }

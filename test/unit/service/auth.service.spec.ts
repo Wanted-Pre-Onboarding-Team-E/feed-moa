@@ -95,7 +95,7 @@ describe('AuthService', () => {
       expect(await authService.checkUserExists(username));
     });
 
-    test('이미 존재하는 계정', async () => {
+    test('이미 존재하는 사용자', async () => {
       const username = 'existingUser';
       const existingUser = {
         username,
@@ -109,7 +109,9 @@ describe('AuthService', () => {
         fail('Expected ConflictException but got no exception');
       } catch (error) {
         expect(error).toBeInstanceOf(ConflictException);
-        expect(error.message).toBe('existingUser은 이미 존재하는 계정입니다.');
+        expect(error.message).toBe(
+          'existingUser은 이미 존재하는 사용자입니다.',
+        );
       }
     });
   });

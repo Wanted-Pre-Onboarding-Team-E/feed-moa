@@ -1,12 +1,11 @@
 import {
   ArgumentMetadata,
-  HttpException,
   Injectable,
+  NotFoundException,
   PipeTransform,
 } from '@nestjs/common';
-import { HttpStatusCode } from '../../enum/httpStatusCode.enum';
 import { PostType } from '../../enum/postType.enum';
-import { ErrorMessage } from '../../error/error.enum';
+import { ErrorType } from '../../enum/errorType.enum';
 
 @Injectable()
 export class PostTypeValidationPipe implements PipeTransform {
@@ -19,10 +18,7 @@ export class PostTypeValidationPipe implements PipeTransform {
     ].includes(type);
 
     if (!isValidPostType) {
-      throw new HttpException(
-        ErrorMessage.typeNotFound,
-        HttpStatusCode.notFound,
-      );
+      throw new NotFoundException(ErrorType.SNS_TYPE_NOT_FOUND);
     }
 
     return type;

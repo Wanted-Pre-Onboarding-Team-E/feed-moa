@@ -2,6 +2,7 @@ import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { StatisticsService } from './statistics.service';
 import { StatisticsDTO } from './dto/statistics.dto';
 import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
+import { SuccessType } from '../../enum/successType.enum';
 
 @UseGuards(JwtAuthGuard)
 @Controller('statistics')
@@ -15,13 +16,13 @@ export class StatisticsController {
     }
     if (statisticsDTO.type === 'date') {
       return {
-        message: '일자별 통계 조회에 성공하였습니다.',
+        message: SuccessType.STATISTIC_DAYS_GET,
         data: this.statisticsService.getStatisticsByDate(statisticsDTO),
       };
     }
     if (statisticsDTO.type === 'hour') {
       return {
-        message: '시간별 통계 조회에 성공하였습니다.',
+        message: SuccessType.STATISTIC_TIME_GET,
         data: this.statisticsService.getStatisticsByHour(statisticsDTO),
       };
     }
