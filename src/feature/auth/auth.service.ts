@@ -13,6 +13,7 @@ import { AuthCode } from '../../entity/authCode.entity';
 import { User } from '../../entity/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
+import { ErrorType } from '../../enum/errorType.enum';
 
 @Injectable()
 export class AuthService {
@@ -25,9 +26,9 @@ export class AuthService {
   ) {}
 
   /** 사용자 생성
-   * @Param username 사용자 계정이름
-   * @Param email    사용자 이메일
-   * @Param password 사용자 비밀번호, 해시 함수를 적용하고 저장 */
+   * @param username 사용자 계정이름
+   * @param email    사용자 이메일
+   * @param password 사용자 비밀번호, 해시 함수를 적용하고 저장 */
   async createUser({ username, email, password }) {
     const code: string = Math.floor(Math.random() * 1000000).toString();
     const savedAuthCode = await this.authCodeRepository.save({
@@ -46,8 +47,8 @@ export class AuthService {
   }
 
   /** 비밀번호 유효성 검사
-   * @Param password 사용자 비밀번호
-   * @Param confirmPassword 사용자 비밀번호 확인 */
+   * @param password 사용자 비밀번호
+   * @param confirmPassword 사용자 비밀번호 확인 */
   async checkPasswordValidate(password: string, confirmPassword: string) {
     const characterTypes = [
       /[a-zA-Z]/.test(password),
@@ -55,40 +56,34 @@ export class AuthService {
       /[!@#$%^&*]/.test(password),
     ].filter(Boolean).length;
     if (characterTypes < 2) {
-      throw new BadRequestException(
-        `비밀번호는 숫자, 문자, 특수문자 중 2가지 이상을 포함해야하 합니다.`,
-      );
+      throw new BadRequestException(ErrorType.PASSWORD_CHARACTER_REQUIRE);
     }
 
     if (/([!@#$%^&*()+\-=\[\]{}|;:'",.<>/?\w])\1\1/.test(password)) {
-      throw new BadRequestException(
-        `비밀번호는 3회 이상 연속되는 문자 사용은 불가능합니다.`,
-      );
+      throw new BadRequestException(ErrorType.PASSWORD_DISALLOW_CONSECUTIVE);
     }
 
     const hashedConfirmPassword = await bcrypt.hash(confirmPassword, 10);
-    const comparePasswords = await bcrypt.compare(
+    const comparePasswords = await this.comparePassword(
       password,
       hashedConfirmPassword,
     );
+
     if (!comparePasswords) {
-      throw new ConflictException(
-        `비밀번호와 비밀번호 확인이 일치하지 않습니다.`,
-      );
+      throw new ConflictException(ErrorType.PASSWORD_CONFIRM_MISMATCH);
     }
   }
 
   /** 중복된 사용자 여부 확인
-   * @Param username 사용자 계정이름 */
+   * @param username 사용자 계정이름 */
   async checkUserExists(username: string) {
     const user = await this.userRepository.findOne({
       where: {
         username: username,
       },
     });
-
     if (user) {
-      throw new ConflictException(`${username}은 이미 존재하는 계정입니다.`);
+      throw new ConflictException(`${username}은 ${ErrorType.USER_EXIST}`);
     }
   }
 
@@ -102,11 +97,11 @@ export class AuthService {
       username: loginDto.username,
     });
     if (!user) {
-      throw new UnauthorizedException('존재하지 않는 아이디입니다.');
+      throw new UnauthorizedException(ErrorType.USER_NOT_EXIST);
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('가입 승인되지 않은 사용자입니다.');
+      throw new UnauthorizedException(ErrorType.USER_NOT_APPROVE);
     }
 
     const isMatch = await this.comparePassword(
@@ -114,13 +109,13 @@ export class AuthService {
       user.password,
     );
     if (!isMatch) {
-      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+      throw new UnauthorizedException(ErrorType.PASSWORD_MISMATCH);
     }
 
     return user;
   }
 
-  comparePassword(plainPassword, hashedPassword) {
+  comparePassword(plainPassword: string, hashedPassword: string) {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
@@ -131,7 +126,7 @@ export class AuthService {
       code: authCode,
     });
     if (!foundAuthCode) {
-      throw new UnauthorizedException('유효하지 않은 인증코드 입니다.');
+      throw new UnauthorizedException(ErrorType.AUTH_CODE_INVALID);
     }
 
     const queryRunner = this.dataSource.createQueryRunner();

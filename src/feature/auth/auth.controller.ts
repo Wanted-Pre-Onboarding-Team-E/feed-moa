@@ -10,9 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
-import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
 import { CreateUserDto } from './dto/createUser.dto';
+import { ApproveMembershipRequestDto } from './dto/approveMembershipRequest.dto';
 import { LoginDto } from './dto/login.dto';
+import { SuccessType } from '../../enum/successType.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -22,8 +23,8 @@ export class AuthController {
   ) {}
 
   /** 사용자 회원가입 API
-   * @Param createUserDto 회원가입 입력 정보 */
-  @Post('/signup')
+   * @param createUserDto 회원가입 입력 정보 */
+  @Post('/register')
   async signUpUser(@Body() createUserDto: CreateUserDto) {
     await this.authService.checkUserExists(createUserDto.username);
     await this.authService.checkPasswordValidate(
@@ -33,7 +34,7 @@ export class AuthController {
     const authCode = await this.authService.createUser(createUserDto);
 
     return {
-      message: '가입요청이 완료되었습니다.',
+      message: SuccessType.USER_SIGN_UP,
       data: { authCode },
     };
   }
@@ -52,9 +53,10 @@ export class AuthController {
     const accessToken = await this.jwtService.signAsync(payload);
 
     // Set-Cookie 헤더로 JWT 토큰 & 응답 body로 사용자 정보 반환
-    return res
-      .cookie('accessToken', accessToken, { httpOnly: true })
-      .json(payload);
+    return res.cookie('accessToken', accessToken, { httpOnly: true }).json({
+      message: SuccessType.USER_SIGN_IN,
+      data: payload,
+    });
   }
 
   @Post('approve')
@@ -65,7 +67,7 @@ export class AuthController {
   ) {
     await this.authService.activateUser(approveMembershipRequestDto);
     return {
-      message: '가입 승인되었습니다.',
+      message: SuccessType.USER_APPROVE,
     };
   }
 }

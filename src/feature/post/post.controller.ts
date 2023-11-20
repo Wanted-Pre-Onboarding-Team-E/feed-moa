@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   HttpException,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
@@ -12,14 +13,11 @@ import {
 } from '@nestjs/common';
 
 import { PostService } from './post.service';
-import { Post } from '../../entity/post.entity';
 import { QueryPostsDto } from './dto/queryPost.dto';
-
-import { ApiResult } from '../custom/apiResult';
 import { PostType } from '../../enum/postType.enum';
-import { ErrorMessage } from '../../error/error.enum';
-import { HttpStatusCode } from '../../enum/httpStatusCode.enum';
+import { ErrorType } from '../../enum/errorType.enum';
 import { PostTypeValidationPipe } from '../pipe/postTypeValidation.pipe';
+import { SuccessType } from '../../enum/successType.enum';
 import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -29,17 +27,29 @@ import { JwtAuthGuard } from '../auth/guard/jwtAuth.guard';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @Get('/')
+  async getPosts(
+    @Query(ValidationPipe) queryPostsDto: QueryPostsDto,
+    @Req() req,
+  ) {
+    if (!queryPostsDto.hashtag) {
+      queryPostsDto.hashtag = req.user.username;
+    }
+    return {
+      message: SuccessType.POSTS_GET,
+      data: await this.postService.getPosts(queryPostsDto),
+    };
+  }
+
   @Get('/:id')
-  async getPostAndAddViewCountById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ApiResult<Post>> {
+  async getPostAndAddViewCountById(@Param('id', ParseIntPipe) id: number) {
     const post = await this.postService.getPostWithHashtagById(id);
     if (!post) {
-      throw new HttpException(ErrorMessage.postNotFound, 404);
+      throw new HttpException(ErrorType.POST_NOT_FOUND, 404);
     }
 
     return {
-      success: true,
+      message: SuccessType.POST_GET,
       data: await this.postService.getPostAndAddViewCountById(post),
     };
   }
@@ -48,38 +58,35 @@ export class PostController {
   async updatePostShareCountById(
     @Param('id', ParseIntPipe) id: number,
     @Param('type', PostTypeValidationPipe) type: PostType,
-  ): Promise<ApiResult<void>> {
+  ) {
     const post = await this.postService.getPostWithHashtagById(id, type);
     if (!post) {
-      throw new HttpException(
-        ErrorMessage.postNotFound,
-        HttpStatusCode.notFound,
-      );
+      throw new NotFoundException(ErrorType.POST_NOT_FOUND);
     }
 
     await this.postService.updatePostShareCountById(id, type, post);
 
     return {
-      success: true,
+      message: SuccessType.POST_SHARE_PATCH,
+      data: {
+        id: id,
+        type: type,
+      },
     };
   }
 
-  @Patch(':postId/like/:type')
+  @Patch('/:id/like/:type')
   async incrementPostLikeCount(
+    @Param('id') id: number,
     @Param('type') type: PostType,
-    @Param('postId') postId: number,
   ) {
-    return await this.postService.incrementPostLikeCount(type, postId);
-  }
-
-  @Get()
-  async getPosts(
-    @Query(ValidationPipe) queryPostsDto: QueryPostsDto,
-    @Req() req,
-  ) {
-    if (!queryPostsDto.hashtag) {
-      queryPostsDto.hashtag = req.user.username;
-    }
-    return await this.postService.getPosts(queryPostsDto);
+    await this.postService.incrementPostLikeCount(id, type);
+    return {
+      message: SuccessType.POST_LIKE_PATCH,
+      data: {
+        id: id,
+        type: type,
+      },
+    };
   }
 }

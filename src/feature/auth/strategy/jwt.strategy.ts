@@ -5,6 +5,7 @@ import { Request } from 'express';
 
 import { UserLib } from '../../user/user.lib';
 import { ConfigService } from '@nestjs/config';
+import { ErrorType } from '../../../enum/errorType.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -27,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.userLib.getUserById(payload.id);
 
     if (!user) {
-      throw new UnauthorizedException('사용자가 존재하지 않습니다.');
+      throw new UnauthorizedException(ErrorType.USER_UNAUTHORIZED);
     }
 
     // NOTE: req.user에 사용자 정보를 담는다.

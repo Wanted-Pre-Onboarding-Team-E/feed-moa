@@ -1,4 +1,5 @@
 ![save](https://github.com/Wanted-Pre-Onboarding-Team-E/social-media-integration-feed/assets/68440583/4f74e658-1226-4caa-82c2-80885ed1b49d)
+
 # #️⃣ 프로젝트 소개
 
 `해시태그`를 기반으로 인스타그램, 페이스북, 트위터, 스레드 등 복수의 `SNS`에 게시된 `게시물`을 하나의 서비스에서 확인할 수 있는 통합 `Feed` 서비스의 `RESTful API` 웹 서버
@@ -9,7 +10,7 @@
 # 🛠️ 기술 스택
 
 <img src="https://img.shields.io/badge/Node.js-version_18-339933">&nbsp;
-<img src="https://img.shields.io/badge/Nest.js-version_10-E0234E">&nbsp;
+<img src="https://img.shields.io/badge/ Nest.js-version_10-E0234E">&nbsp;
 <img src="https://img.shields.io/badge/TypeScript-version_5-3178C6">&nbsp;
 <img src="https://img.shields.io/badge/TypeORM-version_0.3-fcad03">&nbsp;
 <img src="https://img.shields.io/badge/MySQL-version_8-00758F">&nbsp;
@@ -150,7 +151,7 @@ GATEWAY_DOMAIN=
 
 - **강희수**
     - **스켈레톤 프로젝트 생성**
-        - 프로젝트 구조 생성 및 프레임워크&라이브러리 설치
+        - `프로젝트 구조 생성` 및 프레임워크 & 라이브러리 설치
     - **게시물 상세 조회**
         - 하나의 게시물에 대한 상세 정보 및 관련 해시태그 조회
     - **게시물 공유하기**
@@ -159,9 +160,14 @@ GATEWAY_DOMAIN=
             - CustomPipe로 Enum Type의 특정 값에 대한 유효성 검증
             - 로컬에서는 외부 호출을 통과시키기 위해 ConfigModule로 로컬/데브 환경변수 구분
 - **박동훈**
+    - **Database Migration**
+        - `스크립트 파일`을 통한 데이터베이스 `Table` 및 `Seed` 데이터 생성
     - **사용자 회원가입 API 개발**
-        - 사용자 정보(아이디, 이메일, 비밀번호)에 대한 유효성 검사
-        - 가입 승인 절차를 위한 인증 코드 발급
+        - 사용자 정보(`아이디`, `이메일`, `비밀번호`)에 대한 유효성 검사
+        - 가입 승인 절차를 위한 `인증코드` 발급
+    - **사용자 회원가입 API 개발**
+        - 사용자 정보(`아이디`, `이메일`, `비밀번호`)에 대한 유효성 검사
+        - 가입 승인 절차를 위한 `인증코드` 발급
 - **신은수**
     - **가입 승인 API 개발**
         - `DB`에 저장된 인증 코드 검사
@@ -169,9 +175,9 @@ GATEWAY_DOMAIN=
         - `Cookie` + `JWT` 기반 사용자 인증
 - **이드보라**
     - **통계 API 개발**
-        - 해시태그/일자/시간별 게시물 개수, 조회수, `좋아요`수, 공유수 통계 결과 조회
+        - 해시태그/일자/시간별 `게시물 개수`, `조회수`, `좋아요 개수`, `공유 횟수`의 `통계` 결과 조회
 - **이승원**
     - **게시물 목록 조회**
-        - 전체 게시물 목록 및 관련 해시태그 조회
+        - 전체 `게시물 목록` 및 관련 `해시태그` 조회
     - **게시물 좋아요**
         - NestJS에서 제공하는 HttpModule 사용
