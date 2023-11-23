@@ -1,6 +1,6 @@
 ![save](https://github.com/Wanted-Pre-Onboarding-Team-E/social-media-integration-feed/assets/68440583/4f74e658-1226-4caa-82c2-80885ed1b49d)
 
-# :speech_balloon: 소셜 미디어 통합 Feed 서비스
+# :heart: 소셜 미디어 통합 Feed 서비스
 
 ## #️⃣ 프로젝트 소개
 
