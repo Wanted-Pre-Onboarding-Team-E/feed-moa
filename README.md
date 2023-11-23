@@ -1,13 +1,15 @@
 ![save](https://github.com/Wanted-Pre-Onboarding-Team-E/social-media-integration-feed/assets/68440583/4f74e658-1226-4caa-82c2-80885ed1b49d)
 
-# #️⃣ 프로젝트 소개
+# :speech_balloon: 소셜 미디어 통합 Feed 서비스
+
+## #️⃣ 프로젝트 소개
 
 `해시태그`를 기반으로 인스타그램, 페이스북, 트위터, 스레드 등 복수의 `SNS`에 게시된 `게시물`을 하나의 서비스에서 확인할 수 있는 통합 `Feed` 서비스의 `RESTful API` 웹 서버
 애플리케이션입니다.
 
 <br>
 
-# 🛠️ 기술 스택
+## 🛠️ 기술 스택
 
 <img src="https://img.shields.io/badge/Node.js-version_18-339933">&nbsp;
 <img src="https://img.shields.io/badge/ Nest.js-version_10-E0234E">&nbsp;
@@ -17,7 +19,7 @@
 
 <br>
 
-# 🏷️ 목차
+## 🏷️ 목차
 
 1. [:gear: 환경 설정 및 실행](#gear-환경-설정-및-실행)
 2. [:cd: 데이터베이스 모델링](#cd-데이터베이스-모델링)
@@ -27,7 +29,7 @@
 
 <br>
 
-# :gear: 환경 설정 및 실행
+## :gear: 환경 설정 및 실행
 
 데이터베이스 스키마를 생성합니다.
 
@@ -57,7 +59,7 @@ GATEWAY_DOMAIN=
 
 <br>
 
-# :cd: 데이터베이스 모델링
+## :cd: 데이터베이스 모델링
 
 - 게시물 ↔️ 해시태그 `1:N`
     - 사용자는 `게시물`을 소유하지 않는다.
@@ -65,17 +67,17 @@ GATEWAY_DOMAIN=
     - 하나의 `게시물`이 여러 개의 `해시태그`를 등록할 수 있습니다.
       ![ERD](https://hackmd.io/_uploads/r1phpypMT.png)
 
-# :earth_asia: API 명세
+## :earth_asia: API 명세
 
-- [REST API Wiki Documentation](https://github.com/Wanted-Pre-Onboarding-Team-E/social-media-integration-feed/wiki/REST-API)
+> [`GitHub Wiki`로 이동! 🏃🏻‍💨](https://github.com/Wanted-Pre-Onboarding-Team-E/social-media-integration-feed/wiki/REST-API)
 
 <br>
 
-# :bookmark_tabs: 구현 내용
+## :bookmark_tabs: 구현 내용
 
-## 사용자
+#### 사용자
 
-### 사용자 회원 가입
+##### 사용자 회원 가입
 
 - 사용자 정보에 대한 입력값의 유효성을 검사한다.
     - `계정명 중복 여부` 확인
@@ -86,30 +88,30 @@ GATEWAY_DOMAIN=
         - 연속된 문자 3번 이상 사용 금지
 - 생성된 사용자에 대한 인증 코드를 `DB`에 저장한다.
 
-### 사용자 가입승인
+##### 사용자 가입승인
 
 - `회원가입` 후 이메일에서 발급받은 `인증코드`로 가입 승인한다.
     - 이메일 발송 과정은 생략
 
-### 사용자 로그인
+##### 사용자 로그인
 
 - `가입 승인된 사용자`만 `로그인` 할 수 있다.
 - `계정명`과 `비밀번호`로 로그인한다.
 - 로그인 후 `모든 API 요청`에 대해 `JWT 유효성`을 검증한다.
 
-## 게시물
+#### 게시물
 
-### 게시물 목록 조회
+##### 게시물 목록 조회
 
 - `해시태그`로 `게시물 목록`을 `조회`한다.
 - 정렬, 검색, 페이지네이션, `SNS`별 필터링이 적용된다.
 
-### 게시물 상세 조회
+##### 게시물 상세 조회
 
 - `특정 게시물`에 대한 모든 필드를 `조회`한다.
 - 요청 성공 시 횟수 제한 없이 조회수가 `+1` 증가한다.
 
-### 게시물 좋아요
+##### 게시물 좋아요
 
 - 요청 성공 시 횟수 제한 없이 `좋아요` 횟수가 `+1` 증가한다.
 - 게시물의 `SNS 종류`에 따라 `좋아요` 기능에 대한 외부 `API`(가상의 `URL`)를 호출한다.
@@ -121,7 +123,7 @@ GATEWAY_DOMAIN=
 | instagram | POST   | `https://www.instagram.com/likes/<content_id>` |
 | threads   | POST   | `https://www.threads.net/likes/<content_id>`   |
 
-## 게시물 공유하기
+#### 게시물 공유하기
 
 - 요청 성공 시 횟수 제한 없이 `공유` 횟수가 `+1` 증가한다.
 - 게시물의 `SNS 종류`에 따라 `공유` 기능에 대한 외부 `API`(가상의 `URL`)를 호출한다.
@@ -133,21 +135,21 @@ GATEWAY_DOMAIN=
 | POST | instagram | `https://www.instagram.com/share/<content_id>` |
 | POST | threads   | `https://www.threads.net/share/<content_id>`   |
 
-## 게시물 통계
+#### 게시물 통계
 
 - 사용자의 `계정명` 또는 `특정 해시태그별`, `일자별`, `시간별`로 `통계`를 `조회`한다.
 - 통계 항목 : 게시물 개수, 조회수, 좋아요 개수, 공유 횟수
 
 <br>
 
-# :wave: 팀원 소개
+## :wave: 팀원 소개
 
 |                                강희수                                |                                박동훈                                |                                신은수                                |                               이드보라                                |                                이승원                                |
 |:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|
 | <img src="https://hackmd.io/_uploads/H1Honf0fp.jpg" width="100"/> | <img src="https://hackmd.io/_uploads/B12ir7pGp.png" width="100"/> | <img src="https://hackmd.io/_uploads/HyZ86pjzp.png" width="100"/> | <img src="https://hackmd.io/_uploads/ByC5xOhz6.jpg" width="100"/> | <img src="https://hackmd.io/_uploads/B19HTJ6zp.jpg" width="100"/> |
 |              [@kangssu](https://github.com/kangssu)               |            [@laetipark](https://github.com/laetipark)             |              [@dawwson](https://github.com/dawwson)               |             [@sayapin1](https://github.com/sayapin1)              |             [@tomeee11](https://github.com/tomeee11)              |
 
-## 역할
+#### 역할
 
 - **강희수**
     - **스켈레톤 프로젝트 생성**
