@@ -1,7 +1,7 @@
 {
-  "name": "social-media-integration-feed",
+  "name": "feed-moa",
   "version": "0.0.1",
-  "description": "",
+  "description": "[ FeedMoa ] 소셜 미디어 통합 Feed 서비스 RESTful API 서버",
   "author": "",
   "private": true,
   "license": "UNLICENSED",

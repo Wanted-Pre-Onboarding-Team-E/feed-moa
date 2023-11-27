@@ -1,21 +1,22 @@
 ![save](https://github.com/Wanted-Pre-Onboarding-Team-E/social-media-integration-feed/assets/68440583/4f74e658-1226-4caa-82c2-80885ed1b49d)
 
-# :heart: 소셜 미디어 통합 Feed 서비스
+# :heart: FeedMoa
 
 ## #️⃣ 프로젝트 소개
 
-`해시태그`를 기반으로 인스타그램, 페이스북, 트위터, 스레드 등 복수의 `SNS`에 게시된 `게시물`을 하나의 서비스에서 확인할 수 있는 통합 `Feed` 서비스의 `RESTful API` 웹 서버
-애플리케이션입니다.
+`해시태그`를 기반으로 인스타그램, 페이스북, 트위터, 스레드 등 복수의 `SNS`에 게시된 `게시물`을 하나의 서비스에서 확인할 수 있는 통합 `Feed` 서비스입니다.
 
 <br>
 
 ## 🛠️ 기술 스택
 
-<img src="https://img.shields.io/badge/Node.js-version_18-339933">&nbsp;
-<img src="https://img.shields.io/badge/ Nest.js-version_10-E0234E">&nbsp;
-<img src="https://img.shields.io/badge/TypeScript-version_5-3178C6">&nbsp;
-<img src="https://img.shields.io/badge/TypeORM-version_0.3-fcad03">&nbsp;
-<img src="https://img.shields.io/badge/MySQL-version_8-00758F">&nbsp;
+<img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white">&nbsp;
+<img src="https://img.shields.io/badge/Nest.js-E0234E?style=for-the-badge&logo=nestjs&logoColor=white">&nbsp;
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">&nbsp;
+<img src="https://img.shields.io/badge/TypeORM-fcad03?style=for-the-badge">&nbsp;
+<img src="https://img.shields.io/badge/MySQL-00758F?style=for-the-badge&logo=mysql&logoColor=white">&nbsp;
+<img src="https://img.shields.io/badge/jwt-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white">&nbsp;
+<img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white">
 
 <br>
 
