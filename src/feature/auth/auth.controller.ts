@@ -39,7 +39,7 @@ export class AuthController {
     };
   }
 
-  @Post('login')
+  @Post('/login')
   @HttpCode(HttpStatus.OK)
   async userLogin(@Body() loginDto: LoginDto, @Res() res: Response) {
     const verifiedUser = await this.authService.verifyUser(loginDto);
@@ -59,7 +59,7 @@ export class AuthController {
     });
   }
 
-  @Post('approve')
+  @Post('/approve')
   @HttpCode(HttpStatus.OK)
   async approveMembership(
     @Body()
