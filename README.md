@@ -1,6 +1,6 @@
 ![save](https://github.com/Wanted-Pre-Onboarding-Team-E/social-media-integration-feed/assets/68440583/4f74e658-1226-4caa-82c2-80885ed1b49d)
 
-# :heart: FeedMoa
+# :heart: 피드모아(FeedMoa)
 
 ## :hash: 프로젝트 소개
 
